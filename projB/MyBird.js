@@ -33,9 +33,9 @@ class MyBird extends CGFobject {
         this.eyesMat.setDiffuse(0, 0, 0, 1);
     }
 
-    update(t) {        
-        this.animShift = Math.sin((t/1000) * 2 * Math.PI);
-        this.wingsRot = (Math.sin((t/500) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
+    update(t, speedFactor) {        
+        this.animShift = Math.sin((t/1000 * speedFactor) * 2 * Math.PI);
+        this.wingsRot = (Math.sin((t/500 * speedFactor) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
         this.updatePosition();
     }
 
@@ -62,6 +62,12 @@ class MyBird extends CGFobject {
 
     accelerate(v) {
         this.speed += v;
+    }
+
+    reset() {
+        this.speed = 0;
+        this.orientation = 0;
+        this.position = [0,0,0];
     }
 
     display() {

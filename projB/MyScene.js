@@ -11,7 +11,7 @@ class MyScene extends CGFscene {
         this.initCameras();
         this.initLights();
 
-        //Background color
+        // Background color
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
         this.gl.clearDepth(100.0);
@@ -21,12 +21,14 @@ class MyScene extends CGFscene {
         this.enableTextures(true);
         this.setUpdatePeriod(50);
 
-        //Initialize scene objects
+        // Initialize scene objects
         this.axis = new CGFaxis(this);
         this.plane = new Plane(this, 32);
         this.bird = new MyBird(this);
 
-        //Objects connected to MyInterface
+        // Objects connected to MyInterface
+        this.speedFactor = 1;
+        this.scaleFactor = 1;
     }
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
@@ -44,23 +46,26 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
-        this.bird.update(t);
+        this.bird.update(t, this.speedFactor);
         this.checkKeys();
     }
 
     checkKeys() {
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {
-            this.bird.accelerate(0.1)
+            this.bird.accelerate(this.speedFactor)
         }
         if (this.gui.isKeyPressed("KeyS")) {
-            this.bird.accelerate(-0.1);
+            this.bird.accelerate(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyD")) {
-            this.bird.turn(-Math.PI/12);
+            this.bird.turn(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyA")) {
-            this.bird.turn(Math.PI/12);
+            this.bird.turn(this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("KeyR")) {
+            this.bird.reset();
         }
     }
 
@@ -88,7 +93,10 @@ class MyScene extends CGFscene {
         this.plane.display();
         this.popMatrix();
 
+        this.pushMatrix();
+        this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
+        this.popMatrix();
         // ---- END Primitive drawing section
     }
 }
