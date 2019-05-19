@@ -45,6 +45,24 @@ class MyScene extends CGFscene {
     }
     update(t){
         this.bird.update(t);
+        this.checkKeys();
+    }
+
+    checkKeys() {
+        var text="Keys pressed: ";
+        var keysPressed = false;
+
+        // Check for keys codes e.g. in https://keycode.info/
+        if (this.gui.isKeyPressed("KeyW")) {
+            text+="W ";
+            keysPressed = true;
+        }
+        if (this.gui.isKeyPressed("KeyS")) {
+            text+="S ";
+            keysPressed = true;
+        }
+        if (keysPressed)
+            console.log(text);
     }
 
     display() {

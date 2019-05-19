@@ -3,6 +3,7 @@ class MyBird extends CGFobject {
     constructor(scene) {
         super(scene);
         
+        /* Objects */
         this.unitCube = new MyUnitCubeQuad(scene);
         this.pyramid = new MyPyramid(scene, 4, 1);
         this.quad = new MyQuad(scene);
@@ -10,6 +11,10 @@ class MyBird extends CGFobject {
 
         /* Animations variables */
         this.animShift = 0;
+        this.wingsRot = 0;
+        this.orientation = 0;
+        this.speed = 0.1;
+        this.position = [0, 0, 0];
 
         this.initMaterials();
     }
@@ -31,12 +36,30 @@ class MyBird extends CGFobject {
     update(t) {        
         this.animShift = Math.sin((t/1000) * 2 * Math.PI);
         this.wingsRot = (Math.sin((t/500) * 2 * Math.PI) - 1) / 2 * Math.PI/2; // -1 - 0
+        this.updatePosition();
+    }
+
+    updatePosition() {
+        let orientation_v = [ Math.sin(this.orientation), 0, Math.cos(this.orientation)];
+
+        // normalization
+        let ori_v_size=Math.sqrt(
+            orientation_v[0]*orientation_v[0]+
+            orientation_v[2]*orientation_v[2]
+            );
+        orientation_v[0]/=ori_v_size;
+        orientation_v[2]/=ori_v_size;
+        
+        let speed = this.speed;
+        this.position = this.position.map(function(num, idx) {
+            return num + orientation_v[idx] * speed;
+        });
     }
 
     display() {
         /* Oscillation animation */
         this.scene.pushMatrix();
-        this.scene.translate(0, this.animShift, 0);
+        this.scene.translate(this.position[0], this.position[1] + this.animShift, this.position[2]);
 
         /* Head */
         this.scene.pushMatrix();
