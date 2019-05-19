@@ -8,6 +8,9 @@ class MyBird extends CGFobject {
         this.quad = new MyQuad(scene);
         this.cylinder = new MyCylinder(scene, 5);
 
+        /* Animations variables */
+        this.animShift = 0;
+
         this.initMaterials();
     }
 
@@ -25,7 +28,15 @@ class MyBird extends CGFobject {
         this.eyesMat.setDiffuse(0, 0, 0, 1);
     }
 
+    update(t) {        
+        this.animShift = Math.sin((t/1000) * 2 * Math.PI);
+        this.wingsRot = (Math.sin((t/500) * 2 * Math.PI) - 1) / 2 * Math.PI/2; // -1 - 0
+    }
+
     display() {
+        /* Oscillation animation */
+        this.scene.pushMatrix();
+        this.scene.translate(0, this.animShift, 0);
 
         /* Head */
         this.scene.pushMatrix();
@@ -43,7 +54,7 @@ class MyBird extends CGFobject {
         /* Left Wing */
         this.scene.pushMatrix();
         this.scene.translate(0.5, 1, 0);
-        this.scene.rotate(Math.PI/6, 0, 0, 1);
+        this.scene.rotate(Math.PI/6 + this.wingsRot, 0, 0, 1);
         this.scene.translate(0.5, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
         this.quad.display();
@@ -52,7 +63,7 @@ class MyBird extends CGFobject {
         /* Right Wing */
         this.scene.pushMatrix();
         this.scene.translate(-0.5, 1, 0);
-        this.scene.rotate(-Math.PI/6, 0, 0, 1);
+        this.scene.rotate(-Math.PI/6 - this.wingsRot, 0, 0, 1);
         this.scene.translate(-0.5, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
         this.quad.display();
@@ -81,6 +92,9 @@ class MyBird extends CGFobject {
         this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.beakMat.apply();
         this.pyramid.display();
+        this.scene.popMatrix();
+
+
         this.scene.popMatrix();
 
         this.scene.setDefaultAppearance();

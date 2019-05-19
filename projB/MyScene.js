@@ -44,7 +44,7 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
-
+        this.bird.update(t);
     }
 
     display() {
