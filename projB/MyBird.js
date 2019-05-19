@@ -13,7 +13,7 @@ class MyBird extends CGFobject {
         this.animShift = 0;
         this.wingsRot = 0;
         this.orientation = 0;
-        this.speed = 0.1;
+        this.speed = 0;
         this.position = [0, 0, 0];
 
         this.initMaterials();
@@ -35,7 +35,7 @@ class MyBird extends CGFobject {
 
     update(t) {        
         this.animShift = Math.sin((t/1000) * 2 * Math.PI);
-        this.wingsRot = (Math.sin((t/500) * 2 * Math.PI) - 1) / 2 * Math.PI/2; // -1 - 0
+        this.wingsRot = (Math.sin((t/500) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
         this.updatePosition();
     }
 
@@ -51,15 +51,24 @@ class MyBird extends CGFobject {
         orientation_v[2]/=ori_v_size;
         
         let speed = this.speed;
-        this.position = this.position.map(function(num, idx) {
-            return num + orientation_v[idx] * speed;
+        this.position = this.position.map(function(coord, index) {
+            return coord + orientation_v[index] * speed;
         });
+    }
+
+    turn(v) {
+        this.orientation += v;
+    }
+
+    accelerate(v) {
+        this.speed += v;
     }
 
     display() {
         /* Oscillation animation */
         this.scene.pushMatrix();
         this.scene.translate(this.position[0], this.position[1] + this.animShift, this.position[2]);
+        this.scene.rotate(this.orientation, 0, 1, 0);
 
         /* Head */
         this.scene.pushMatrix();
@@ -77,7 +86,7 @@ class MyBird extends CGFobject {
         /* Left Wing */
         this.scene.pushMatrix();
         this.scene.translate(0.5, 1, 0);
-        this.scene.rotate(Math.PI/6 + this.wingsRot, 0, 0, 1);
+        this.scene.rotate(Math.PI/6 - this.wingsRot, 0, 0, 1);
         this.scene.translate(0.5, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
         this.quad.display();
@@ -86,7 +95,7 @@ class MyBird extends CGFobject {
         /* Right Wing */
         this.scene.pushMatrix();
         this.scene.translate(-0.5, 1, 0);
-        this.scene.rotate(-Math.PI/6 - this.wingsRot, 0, 0, 1);
+        this.scene.rotate(-Math.PI/6 + this.wingsRot, 0, 0, 1);
         this.scene.translate(-0.5, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
         this.quad.display();
