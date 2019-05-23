@@ -21,6 +21,7 @@ class MyBird extends CGFobject {
         /* Init dropping state variables */
         this.currentState = 0;
         this.dropShift = 0;
+        this.groundedLimit = 0.1;
         this.drop = false;
         this.birdHeight = 10;
         this.prevStartTime = 0;
@@ -56,16 +57,19 @@ class MyBird extends CGFobject {
 
             /* Dropping and rising*/
             case 1:
-                /* If two seconds have passed */
-                if ((t - this.prevStartTime)/1000 >= 2) {
-                    this.currentState = 0; /* Set normal */
-                    this.drop = false;
-                    break;
-                }
-
                 this.dropShift = -Math.sin((t - this.prevStartTime)/4000 * 2 * Math.PI) * this.birdHeight;
                 this.animShift = 0;
+                
+                if (this.dropShift > 0) {
+                    this.currentState = 0; /* Set normal */
+                    this.drop = false;
+                }
+
+                if (Math.abs(this.birdHeight + this.dropShift) <= this.groundedLimit) {
+                    console.log("grounded");
+                }
                 break;
+            
             case 2:
 
                 break;
