@@ -27,7 +27,8 @@ class MyBird extends CGFobject {
         this.prevStartTime = 0;
 
         this.branches = [];
-        this.branchesOffset = -4;
+        this.branchesOffset = -1;
+        this.catchBranchDist = 1;
     }
 
     initMaterials() {
@@ -69,12 +70,11 @@ class MyBird extends CGFobject {
                 }
 
                 if (Math.abs(this.birdHeight + this.dropShift) <= this.groundedLimit) {
-                    console.log("grounded");
+                    let caught = this.scene.branchesNear(this.position, this.catchBranchDist);
+                    for (let i = 0; i < caught.length; i++) {
+                        this.branches.push(caught[i]);
+                    }
                 }
-                break;
-            
-            case 2:
-
                 break;
         }
 
@@ -182,7 +182,7 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         for (let i = 0; i < this.branches.length; i++) {
             this.scene.pushMatrix();
-            this.translate(0, this.branchesOffset, 0);
+            this.scene.translate(0, this.branchesOffset, 0);
             this.scene.rotate(this.branches[i].rotation, 0, 1, 0);
             this.branches[i].display();
             this.scene.popMatrix();
