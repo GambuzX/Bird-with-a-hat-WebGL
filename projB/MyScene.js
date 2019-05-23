@@ -26,6 +26,7 @@ class MyScene extends CGFscene {
         this.bird = new MyBird(this);
         this.terrain = new MyTerrain(this);        
         this.branches = [new MyTreeBranch(this), new MyTreeBranch(this), new MyTreeBranch(this), new MyTreeBranch(this)];
+        this.nest = new MyNest(this);
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -100,7 +101,7 @@ class MyScene extends CGFscene {
         this.bird.display();
         this.popMatrix();
 
-        /* START draw branches */
+        /* BEGIN draw branches */
         let ground_height = 3;
         this.pushMatrix();
         this.translate(0, ground_height, 0);
@@ -127,8 +128,11 @@ class MyScene extends CGFscene {
         this.rotate(Math.PI/2, 0, 1, 0);
         this.branches[3].display();
         this.popMatrix();
-
         /* END draw branches */
+
+        this.pushMatrix();
+        this.nest.display();
+        this.popMatrix();
 
         this.popMatrix();
         // ---- END Primitive drawing section
