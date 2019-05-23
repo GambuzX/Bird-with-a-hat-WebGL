@@ -17,6 +17,13 @@ class MyBird extends CGFobject {
         this.position = [0, 0, 0];
 
         this.initMaterials();
+        
+        /* Init dropping state variables */
+        this.currentState = 0;
+        this.dropShift = 0;
+        this.drop = false;
+        this.birdHeight = 10;
+        this.prevStartTime = 0;
     }
 
     initMaterials() {
@@ -33,9 +40,37 @@ class MyBird extends CGFobject {
         this.eyesMat.setDiffuse(0, 0, 0, 1);
     }
 
-    update(t, speedFactor) {        
-        this.animShift = Math.sin((t/1000 * speedFactor) * 2 * Math.PI);
+    update(t, speedFactor) {
         this.wingsRot = (Math.sin((t/500 * speedFactor) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
+
+        switch(this.currentState) {
+            /* Normal */
+            case 0:
+                if (this.drop) {
+                    this.drop = false;
+                    this.currentState = 1; /* Set dropping */
+                    this.prevStartTime = t;
+                }
+                this.animShift = Math.sin((t/1000 * speedFactor) * 2 * Math.PI);
+                break;
+
+            /* Dropping and rising*/
+            case 1:
+                /* If two seconds have passed */
+                if ((t - this.prevStartTime)/1000 >= 2) {
+                    this.currentState = 0; /* Set normal */
+                    this.drop = false;
+                    break;
+                }
+
+                this.dropShift = -Math.sin((t - this.prevStartTime)/4000 * 2 * Math.PI) * this.birdHeight;
+                this.animShift = 0;
+                break;
+            case 2:
+
+                break;
+        }
+
         this.updatePosition();
     }
 
@@ -50,7 +85,7 @@ class MyBird extends CGFobject {
         orientation_v[0]/=ori_v_size;
         orientation_v[2]/=ori_v_size;
         
-        let speed = this.speed;
+        let speed = this.speed/5;
         this.position = this.position.map(function(coord, index) {
             return coord + orientation_v[index] * speed;
         });
@@ -64,6 +99,10 @@ class MyBird extends CGFobject {
         this.speed += v;
     }
 
+    dropBird() {
+        this.drop = true;
+    }
+
     reset() {
         this.speed = 0;
         this.orientation = 0;
@@ -73,7 +112,7 @@ class MyBird extends CGFobject {
     display() {
         /* Oscillation animation */
         this.scene.pushMatrix();
-        this.scene.translate(this.position[0], this.position[1] + this.animShift, this.position[2]);
+        this.scene.translate(this.position[0], this.position[1] + this.animShift + this.dropShift, this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
 
         /* Head */

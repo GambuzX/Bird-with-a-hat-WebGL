@@ -61,13 +61,16 @@ class MyScene extends CGFscene {
             this.bird.accelerate(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyD")) {
-            this.bird.turn(-this.speedFactor);
+            this.bird.turn((Math.PI/6) / 3 * -this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyA")) {
-            this.bird.turn(this.speedFactor);
+            this.bird.turn((Math.PI/6) / 3 * this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyR")) {
             this.bird.reset();
+        }
+        if (this.gui.isKeyPressed("KeyP")) {
+            this.bird.dropBird();
         }
     }
 
@@ -95,16 +98,16 @@ class MyScene extends CGFscene {
         this.terrain.display();
         this.popMatrix();
 
-        this.pushMatrix();
-        this.translate(0, 10, 0);
-        this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
-        this.bird.display();
-        this.popMatrix();
-
-        /* BEGIN draw branches */
+        /* BEGIN draw objects at ground height */
         let ground_height = 3;
         this.pushMatrix();
         this.translate(0, ground_height, 0);
+
+        this.pushMatrix();
+        this.translate(0, this.bird.birdHeight, 0);
+        this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
+        this.bird.display();
+        this.popMatrix();
         
         this.pushMatrix();
         this.translate(-8, 0, 6);
@@ -128,7 +131,7 @@ class MyScene extends CGFscene {
         this.rotate(Math.PI/2, 0, 1, 0);
         this.branches[3].display();
         this.popMatrix();
-        /* END draw branches */
+        /* END draw objects at ground height */
 
         this.pushMatrix();
         this.nest.display();
