@@ -97,6 +97,11 @@ class MyScene extends CGFscene {
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
         this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(0, 0, 2);
+        this.cylinder.display();
+        this.popMatrix();
         // ---- END Primitive drawing section
     }
 }
