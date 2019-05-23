@@ -29,6 +29,7 @@ class MyBird extends CGFobject {
         this.branches = [];
         this.branchesOffset = 0;
         this.catchBranchDist = 2;
+        this.dropNestDist = 2;
     }
 
     initMaterials() {
@@ -69,16 +70,42 @@ class MyBird extends CGFobject {
                     this.drop = false;
                 }
 
+                /* Grounded */
                 if (Math.abs(this.birdHeight + this.dropShift) <= this.groundedLimit) {
-                    let caught = this.scene.branchesNear(this.position, this.catchBranchDist);
-                    for (let i = 0; i < caught.length; i++) {
-                        this.branches.push(caught[i]);
-                    }
+                    this.grabNearBranches();
+                    this.dropBranchesInNest();
                 }
                 break;
         }
 
         this.updatePosition();
+    }
+
+    grabNearBranches() {
+        for (let i = this.scene.branches.length-1; i >= 0; i--) {
+            if (this.scene.euclidianDistance(this.position, this.scene.branches[i].position) <= this.catchBranchDist) {
+                this.addBranch(this.scene.branches[i]);
+                this.scene.removeBranch(i);
+            }
+        }
+    }
+
+    dropBranchesInNest() {
+        if (this.scene.euclidianDistance(this.position, this.scene.nest.position) < this.dropNestDist) {
+            for (let i = this.branches.length-1; i >= 0; i--) {
+                this.branches[i].position = this.scene.nest.position;
+                this.scene.addBranch(this.branches[i]);
+                this.removeBranch(i);
+            }
+        }
+    }
+
+    addBranch(branch) {
+        this.branches.push(branch);
+    }
+
+    removeBranch(i) {
+        this.branches.splice(i, 1);
     }
 
     updatePosition() {

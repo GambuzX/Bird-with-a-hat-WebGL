@@ -27,11 +27,11 @@ class MyScene extends CGFscene {
         this.terrain = new MyTerrain(this);        
         this.branches = [
             new MyTreeBranch(this, -8, 0, 6, 0), 
-            new MyTreeBranch(this, 3, 0, 4, Math.PI/3), 
+            new MyTreeBranch(this, 5, 0, 8, Math.PI/3), 
             new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3), 
             new MyTreeBranch(this, -15, 0, -7, Math.PI/2)
         ];
-        this.nest = new MyNest(this);
+        this.nest = new MyNest(this, 0, 0, 0);
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -79,19 +79,16 @@ class MyScene extends CGFscene {
         }
     }
 
-    branchesNear(position, compDistance) {
-        let near = [];
-        for (let i = this.branches.length-1; i >= 0; i--) {
-            if (this.euclidianDistance(position, this.branches[i].position) <= compDistance) {
-                near.push(this.branches[i]);
-                this.branches.splice(i, 1);
-            }
-        }
-        return near;
-    }
-
     euclidianDistance(pos1, pos2) {
         return Math.sqrt(Math.pow(pos1[0]-pos2[0], 2) + Math.pow(pos1[1]-pos2[1], 2) + Math.pow(pos1[2]-pos2[2], 2));
+    }
+
+    addBranch(branch) {
+        this.branches.push(branch);
+    }
+
+    removeBranch(i) {
+        this.branches.splice(i,1);
     }
 
     display() {
