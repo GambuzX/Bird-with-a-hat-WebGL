@@ -25,6 +25,7 @@ class MyScene extends CGFscene {
         this.axis = new CGFaxis(this);
         this.plane = new Plane(this, 32);
         this.bird = new MyBird(this);
+        this.cylinder = new MyCylinder(this, 6);
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -96,6 +97,11 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(0, 0, 2);
+        this.cylinder.display();
         this.popMatrix();
         // ---- END Primitive drawing section
     }
