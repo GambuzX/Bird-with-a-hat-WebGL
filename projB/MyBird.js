@@ -27,8 +27,8 @@ class MyBird extends CGFobject {
         this.prevStartTime = 0;
 
         this.branches = [];
-        this.branchesOffset = -1;
-        this.catchBranchDist = 1;
+        this.branchesOffset = 0;
+        this.catchBranchDist = 2;
     }
 
     initMaterials() {
