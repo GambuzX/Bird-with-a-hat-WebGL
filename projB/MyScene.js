@@ -23,7 +23,7 @@ class MyScene extends CGFscene {
 
         // Initialize scene objects
         this.axis = new CGFaxis(this);
-        //this.bird = new MyBird(this);
+        this.bird = new MyBird(this);
         this.terrain = new MyTerrain(this);
 
         // Objects connected to MyInterface
@@ -95,7 +95,7 @@ class MyScene extends CGFscene {
 
         this.pushMatrix();
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
-        //this.bird.display();
+        this.bird.display();
         this.popMatrix();
         // ---- END Primitive drawing section
     }
