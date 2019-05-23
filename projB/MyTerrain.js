@@ -3,12 +3,12 @@ class MyTerrain extends CGFobject {
         super(scene);
 
         this.minHeight = 0;
-        this.maxHeight = 10;
+        this.maxHeight = 8;
 
         this.shader = new CGFshader(this.scene.gl,"shaders/terrainShader.vert", "shaders/terrainShader.frag");
 
         this.texture = new CGFtexture(this.scene, "images/terrain.jpg");
-        this.heightMap = new CGFtexture(this.scene, "images/heightmap.jpg");
+        this.heightMap = new CGFtexture(this.scene, "images/heightmap-flat.jpg");
         this.altimetry = new CGFtexture(this.scene, "images/altimetry.png");
 
         this.shader.setUniformsValues({
@@ -27,7 +27,7 @@ class MyTerrain extends CGFobject {
         //this.appearance.setTexture(this.texture);
         this.appearance.setTextureWrap('REPEAT', 'REPEAT');
 
-        this.planeObject = new Plane(this.scene, 60);
+        this.planeObject = new Plane(this.scene, 128);
     }
 
     display() {
