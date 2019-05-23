@@ -25,7 +25,12 @@ class MyScene extends CGFscene {
         this.axis = new CGFaxis(this);
         this.bird = new MyBird(this);
         this.terrain = new MyTerrain(this);        
-        this.branches = [new MyTreeBranch(this), new MyTreeBranch(this), new MyTreeBranch(this), new MyTreeBranch(this)];
+        this.branches = [
+            new MyTreeBranch(this, -8, 0, 6, 0), 
+            new MyTreeBranch(this, 3, 0, 4, Math.PI/3), 
+            new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3), 
+            new MyTreeBranch(this, -15, 0, -7, Math.PI/2)
+        ];
         this.nest = new MyNest(this);
 
         // Objects connected to MyInterface
@@ -108,29 +113,11 @@ class MyScene extends CGFscene {
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
         this.popMatrix();
-        
-        this.pushMatrix();
-        this.translate(-8, 0, 6);
-        this.branches[0].display();
-        this.popMatrix();
 
-        this.pushMatrix(); 
-        this.translate(3, 0, 4);
-        this.rotate(Math.PI/3, 0, 1, 0);
-        this.branches[1].display();
-        this.popMatrix();
-        
-        this.pushMatrix(); 
-        this.translate(1, 0, -10);
-        this.rotate(2*Math.PI/3, 0, 1, 0);
-        this.branches[2].display();
-        this.popMatrix();
-        
-        this.pushMatrix(); 
-        this.translate(-15, 0, -7);
-        this.rotate(Math.PI/2, 0, 1, 0);
-        this.branches[3].display();
-        this.popMatrix();
+        /* Draw branches */
+        for (let i = 0 ; i < this.branches.length; i++) {
+            this.branches[i].displayInPosition();
+        }
         /* END draw objects at ground height */
 
         this.pushMatrix();

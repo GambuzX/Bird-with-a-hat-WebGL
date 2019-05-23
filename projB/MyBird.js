@@ -25,6 +25,9 @@ class MyBird extends CGFobject {
         this.drop = false;
         this.birdHeight = 10;
         this.prevStartTime = 0;
+
+        this.branches = [];
+        this.branchesOffset = -4;
     }
 
     initMaterials() {
@@ -175,6 +178,16 @@ class MyBird extends CGFobject {
         this.pyramid.display();
         this.scene.popMatrix();
 
+        /* Grabbed Branches */
+        this.scene.pushMatrix();
+        for (let i = 0; i < this.branches.length; i++) {
+            this.scene.pushMatrix();
+            this.translate(0, this.branchesOffset, 0);
+            this.scene.rotate(this.branches[i].rotation, 0, 1, 0);
+            this.branches[i].display();
+            this.scene.popMatrix();
+        }
+        this.scene.popMatrix();
 
         this.scene.popMatrix();
 
