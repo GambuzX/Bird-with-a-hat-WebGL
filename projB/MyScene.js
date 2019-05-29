@@ -24,7 +24,14 @@ class MyScene extends CGFscene {
         // Initialize scene objects
         this.axis = new CGFaxis(this);
         this.bird = new MyBird(this);
-        this.terrain = new MyTerrain(this);
+        this.terrain = new MyTerrain(this);        
+        this.branches = [
+            new MyTreeBranch(this, -8, 0, 6, 0), 
+            new MyTreeBranch(this, 5, 0, 8, Math.PI/3), 
+            new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3), 
+            new MyTreeBranch(this, -15, 0, -7, Math.PI/2)
+        ];
+        this.nest = new MyNest(this, 0, 0, 0);
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -59,14 +66,29 @@ class MyScene extends CGFscene {
             this.bird.accelerate(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyD")) {
-            this.bird.turn(-this.speedFactor);
+            this.bird.turn((Math.PI/6) / 3 * -this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyA")) {
-            this.bird.turn(this.speedFactor);
+            this.bird.turn((Math.PI/6) / 3 * this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyR")) {
             this.bird.reset();
         }
+        if (this.gui.isKeyPressed("KeyP")) {
+            this.bird.dropBird();
+        }
+    }
+
+    euclidianDistance(pos1, pos2) {
+        return Math.sqrt(Math.pow(pos1[0]-pos2[0], 2) + Math.pow(pos1[1]-pos2[1], 2) + Math.pow(pos1[2]-pos2[2], 2));
+    }
+
+    addBranch(branch) {
+        this.branches.push(branch);
+    }
+
+    removeBranch(i) {
+        this.branches.splice(i,1);
     }
 
     display() {
@@ -93,9 +115,26 @@ class MyScene extends CGFscene {
         this.terrain.display();
         this.popMatrix();
 
+        /* BEGIN draw objects at ground height */
+        let ground_height = 3;
+        this.pushMatrix();
+        this.translate(0, ground_height, 0);
+
         this.pushMatrix();
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
+        this.popMatrix();
+
+        /* Draw branches */
+        for (let i = 0 ; i < this.branches.length; i++) {
+            this.branches[i].displayInPosition();
+        }
+        /* END draw objects at ground height */
+
+        this.pushMatrix();
+        this.nest.display();
+        this.popMatrix();
+
         this.popMatrix();
         // ---- END Primitive drawing section
     }
