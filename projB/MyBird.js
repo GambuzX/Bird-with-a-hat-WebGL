@@ -11,6 +11,7 @@ class MyBird extends CGFobject {
         this.circle = new MyCircle(scene);
         this.birdClaw = new MyBirdClaw(scene);
         this.birdWing = new MyBirdWing(scene);
+        this.birdTail = new MyBirdTail(scene);
 
         /* Animations variables */
         this.animShift = 0;
@@ -204,6 +205,7 @@ class MyBird extends CGFobject {
 
         this.draw_body();
         this.draw_wings();
+        this.draw_tail();
         this.draw_claws();
     }
 
@@ -313,6 +315,13 @@ class MyBird extends CGFobject {
         this.scene.scale(this.beak_size, this.beak_length, this.beak_size);
         this.beakMat.apply();
         this.pyramid.display();
+        this.scene.popMatrix();
+    }
+
+    draw_tail() {
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0, -this.bodyLength);
+        this.birdTail.display();
         this.scene.popMatrix();
     }
 
