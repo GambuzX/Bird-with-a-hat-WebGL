@@ -23,7 +23,7 @@ class MyBird extends CGFobject {
         this.dropShift = 0;
         this.groundedLimit = 0.1;
         this.drop = false;
-        this.birdHeight = 10;
+        this.birdHeight = 3;
         this.prevStartTime = 0;
 
         this.branches = [];
@@ -146,7 +146,7 @@ class MyBird extends CGFobject {
     display() {
         /* Oscillation animation */
         this.scene.pushMatrix();
-        this.scene.translate(this.position[0], this.position[1] + this.animShift + this.dropShift, this.position[2]);
+        this.scene.translate(this.position[0], this.position[1] + this.animShift + this.dropShift + this.birdHeight, this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
 
         /* Head */

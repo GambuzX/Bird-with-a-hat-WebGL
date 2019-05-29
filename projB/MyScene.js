@@ -121,7 +121,6 @@ class MyScene extends CGFscene {
         this.translate(0, ground_height, 0);
 
         this.pushMatrix();
-        this.translate(0, this.bird.birdHeight, 0);
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
         this.popMatrix();
