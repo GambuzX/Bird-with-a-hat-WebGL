@@ -21,6 +21,7 @@ class MyBird extends CGFobject {
         this.speed = 0;
         this.position = [0, 0, 0];
 
+        this.initBodyVariables();
         this.initMaterials();
         
         /* Init dropping state variables */
@@ -32,11 +33,11 @@ class MyBird extends CGFobject {
         this.prevStartTime = 0;
 
         this.branches = [];
-        this.branchesOffset = 0;
+        this.branches_y_offset = this.claw_y_offset-0.5;
+        this.branches_z_offset = this.claw_z_offset;
         this.catchBranchDist = 2;
         this.dropNestDist = 2;
 
-        this.initBodyVariables();
     }
 
     initMaterials() {
@@ -128,7 +129,10 @@ class MyBird extends CGFobject {
 
                 /* Grounded */
                 if (Math.abs(this.birdHeight + this.dropShift) <= this.groundedLimit) {
-                    this.grabNearBranches();
+                    /* Only allow on branch at a time */
+                    if (this.branches.length == 0) 
+                        this.grabNearBranches();
+
                     this.dropBranchesInNest();
                 }
                 break;
@@ -255,8 +259,8 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         this.scene.rotate(-this.cyl_rot_fix, 0, 0, 1);
         this.scene.translate(-this.bodyRadius, 0, -this.bodyLength/2);
-        this.scene.rotate(Math.PI, 0, 1, 0);
-        this.scene.rotate(this.base_wings_rot - this.wingsRot, 0, 0, 1);
+        this.scene.rotate(-this.base_wings_rot + this.wingsRot, 0, 0, 1);
+        this.scene.scale(-1,1,1);
         this.birdWing.display();
         this.scene.popMatrix();
     }
@@ -386,8 +390,8 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         for (let i = 0; i < this.branches.length; i++) {
             this.scene.pushMatrix();
-            this.scene.translate(0, this.branchesOffset, 0);
-            this.scene.rotate(this.branches[i].rotation, 0, 1, 0);
+            this.scene.translate(0, this.branches_y_offset, this.branches_z_offset);
+            this.scene.rotate(Math.PI/2, 0, 1, 0);
             this.branches[i].display();
             this.scene.popMatrix();
         }
