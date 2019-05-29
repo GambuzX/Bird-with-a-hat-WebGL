@@ -30,6 +30,13 @@ class MyBird extends CGFobject {
         this.branchesOffset = 0;
         this.catchBranchDist = 2;
         this.dropNestDist = 2;
+
+        /* Body size */
+        this.bodyLength = 1.5;
+        this.bodyRadius = 0.8;
+
+        this.headHeight = 0.2;
+        this.headRadius = 0.8;
     }
 
     initMaterials() {
@@ -151,20 +158,24 @@ class MyBird extends CGFobject {
 
         /* Head */
         this.scene.pushMatrix();
-        this.scene.translate(0, 1.5, 0.5);
+        this.scene.translate(0, this.headHeight + this.bodyRadius, 0);
+        this.scene.scale(this.headRadius, 1, this.headRadius);
         this.birdMat.apply();
-        this.unitCube.display();
+        this.cylinder.display();
         this.scene.popMatrix();
 
         /* Body */
         this.scene.pushMatrix();
         this.scene.translate(0, 0.5, 0);
-        this.unitCube.display();
+        this.scene.scale(this.bodyRadius, this.bodyRadius, this.bodyLength);
+        this.scene.rotate(Math.PI/2 - 2*Math.PI/this.cylinder.slices , 0, 0, 1);
+        this.scene.rotate(-Math.PI/2, 1, 0, 0);
+        this.cylinder.display();
         this.scene.popMatrix();
 
         /* Left Wing */
         this.scene.pushMatrix();
-        this.scene.translate(0.5, 1, 0);
+        this.scene.translate(0.5, 1, -this.bodyLength/2);
         this.scene.rotate(Math.PI/6 - this.wingsRot, 0, 0, 1);
         this.scene.translate(0.5, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
@@ -173,7 +184,7 @@ class MyBird extends CGFobject {
 
         /* Right Wing */
         this.scene.pushMatrix();
-        this.scene.translate(-0.5, 1, 0);
+        this.scene.translate(-0.5, 1, -this.bodyLength/2);
         this.scene.rotate(-Math.PI/6 + this.wingsRot, 0, 0, 1);
         this.scene.translate(-0.5, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
@@ -182,7 +193,7 @@ class MyBird extends CGFobject {
 
         /* Left Eye */
         this.scene.pushMatrix();
-        this.scene.translate(0.5, 1.6, 0.8);
+        this.scene.translate(0.5, 1.6, this.headRadius);
         this.scene.scale(0.2, 0.2, 0.2);
         this.eyesMat.apply();
         this.unitCube.display();
@@ -190,15 +201,14 @@ class MyBird extends CGFobject {
 
         /* Right Eye */
         this.scene.pushMatrix();
-        this.scene.translate(-0.5, 1.6, 0.8);
+        this.scene.translate(-0.5, 1.6, this.headRadius);
         this.scene.scale(0.2, 0.2, 0.2);
         this.unitCube.display();
         this.scene.popMatrix();
 
-
         /* Beak */
         this.scene.pushMatrix();
-        this.scene.translate(0, 1.3, 1);
+        this.scene.translate(0, 1.3, this.headRadius);
         this.scene.scale(0.3, 0.3, 0.3);
         this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.beakMat.apply();
@@ -222,3 +232,19 @@ class MyBird extends CGFobject {
     }
 
 }
+
+
+/* IDEAS
+
+white eyes
+better wings
+hat
+claws tilted back
+something in front
+tail
+
+
+
+
+
+*/

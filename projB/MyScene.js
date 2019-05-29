@@ -109,12 +109,12 @@ class MyScene extends CGFscene {
         this.setDefaultAppearance();
 
         // ---- BEGIN Primitive drawing section
-        this.pushMatrix();
+        /*this.pushMatrix();
         this.rotate(-0.5*Math.PI, 1, 0, 0);
         this.scale(60, 60, 1);
         this.terrain.display();
         this.popMatrix();
-
+*/
         /* BEGIN draw objects at ground height */
         let ground_height = 3;
         this.pushMatrix();
@@ -126,15 +126,15 @@ class MyScene extends CGFscene {
         this.popMatrix();
 
         /* Draw branches */
-        for (let i = 0 ; i < this.branches.length; i++) {
+        /*for (let i = 0 ; i < this.branches.length; i++) {
             this.branches[i].displayInPosition();
-        }
+        }*/
         /* END draw objects at ground height */
 
-        this.pushMatrix();
+        /*this.pushMatrix();
         this.nest.display();
         this.popMatrix();
-
+*/
         this.popMatrix();
         // ---- END Primitive drawing section
     }
