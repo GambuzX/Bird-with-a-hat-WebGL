@@ -23,12 +23,15 @@ class MyScene extends CGFscene {
 
         // Initialize scene objects
         this.axis = new CGFaxis(this);
-        this.bird = new MyBird(this);
+        //this.bird = new MyBird(this);
         this.terrain = new MyTerrain(this);
+
+        this.lightning = new MyLightning(this);
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
         this.scaleFactor = 1;
+
     }
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
@@ -46,14 +49,17 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
-        this.bird.update(t, this.speedFactor);
-        this.checkKeys();
+        //this.bird.update(t, this.speedFactor);
+        if (this.lightning.animating) {
+            this.lightning.update(t);
+        }
+        this.checkKeys(t);
     }
 
-    checkKeys() {
+    checkKeys(t) {
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {
-            this.bird.accelerate(this.speedFactor)
+            this.bird.accelerate(this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyS")) {
             this.bird.accelerate(-this.speedFactor);
@@ -66,6 +72,9 @@ class MyScene extends CGFscene {
         }
         if (this.gui.isKeyPressed("KeyR")) {
             this.bird.reset();
+        }
+        if (this.gui.isKeyPressed("KeyL")) {
+            this.lightning.startAnimation(t);
         }
     }
 
@@ -92,10 +101,16 @@ class MyScene extends CGFscene {
         this.scale(60, 60, 1);
         this.terrain.display();
         this.popMatrix();
+        
 
         this.pushMatrix();
         this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
-        this.bird.display();
+        //this.bird.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.rotate(Math.PI, 0,0,1);
+        //this.lightning.display();
         this.popMatrix();
         // ---- END Primitive drawing section
     }

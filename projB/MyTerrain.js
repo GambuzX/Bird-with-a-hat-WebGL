@@ -24,7 +24,7 @@ class MyTerrain extends CGFobject {
 		this.appearance.setDiffuse(1, 1, 1, 1);
 		this.appearance.setSpecular(0.0, 0.0, 0.0, 1);
         this.appearance.setShininess(120);
-        //this.appearance.setTexture(this.texture);
+        this.appearance.setTexture(this.texture);
         this.appearance.setTextureWrap('REPEAT', 'REPEAT');
 
         this.planeObject = new Plane(this.scene, 128);
@@ -33,7 +33,6 @@ class MyTerrain extends CGFobject {
     display() {
         this.appearance.apply();
         this.scene.setActiveShader(this.shader);
-        this.texture.bind(0);
         this.heightMap.bind(1);
         this.altimetry.bind(2);
 
