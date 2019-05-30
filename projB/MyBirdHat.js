@@ -10,7 +10,7 @@ class MyBirdHat extends CGFobject {
         this.cylinder.display();
 
         this.scene.pushMatrix();
-        this.scene.scale(1.5, 0.4, 1.5);
+        this.scene.scale(1.5, 0.2, 1.5);
         this.cylinder.display();
         this.scene.popMatrix();
     }

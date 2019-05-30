@@ -60,7 +60,7 @@ class MyBird extends CGFobject {
         this.chestMat = new CGFappearance(this.scene);
         this.chestMat.setAmbient(1, 1, 1, 1);
         this.chestMat.setDiffuse(1, 1, 1, 1);
-        this.chestMat.loadTexture('images/bird_chest.png');
+        this.chestMat.loadTexture('images/bird/bird_chest.png');
         this.chestMat.setTextureWrap('REPEAT', 'REPEAT');
 
         this.feathersMat = new CGFappearance(this.scene);
@@ -74,6 +74,12 @@ class MyBird extends CGFobject {
         this.legMat.setDiffuse(1, 1, 1, 1);
         this.legMat.loadTexture('images/bird/bird_feet.png');
         this.legMat.setTextureWrap('REPEAT', 'REPEAT');
+
+        this.hatMat = new CGFappearance(this.scene);
+        this.hatMat.setAmbient(1, 1, 1, 1);
+        this.hatMat.setDiffuse(1, 1, 1, 1);
+        this.hatMat.loadTexture('images/bird/straw.png');
+        this.hatMat.setTextureWrap('REPEAT', 'REPEAT');
     }
 
     initBodyVariables() {
@@ -404,6 +410,7 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(0, 1, 0);
         this.scene.scale(this.headRadius, this.hat_size, this.headRadius);
+        this.hatMat.apply();
         this.birdHat.display();
         this.scene.popMatrix();
     }
