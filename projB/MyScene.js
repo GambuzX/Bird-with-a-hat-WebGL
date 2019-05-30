@@ -35,7 +35,6 @@ class MyScene extends CGFscene {
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
-        this.scaleFactor = 1;
     }
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
@@ -116,22 +115,25 @@ class MyScene extends CGFscene {
         this.popMatrix();
 
         /* BEGIN draw objects at ground height */
-        let ground_height = 3;
+        let ground_height = 2.5;
         this.pushMatrix();
         this.translate(0, ground_height, 0);
 
-        this.pushMatrix();
-        this.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
         this.bird.display();
-        this.popMatrix();
 
         /* Draw branches */
-        for (let i = 0 ; i < this.branches.length; i++) {
-            this.branches[i].displayInPosition();
+        for (let i = 0 ; i < this.branches.length; i++) {        
+            this.pushMatrix();
+            this.translate( this.branches[i].position[0],  this.branches[i].position[1],  this.branches[i].position[2]);
+            this.rotate( this.branches[i].rotation, 0, 1, 0);  
+            this.scale(0.5, 0.5, 0.5);      
+            this.branches[i].display();
+            this.popMatrix();
         }
         /* END draw objects at ground height */
 
         this.pushMatrix();
+        this.scale(0.5, 0.5, 0.5);
         this.nest.display();
         this.popMatrix();
 

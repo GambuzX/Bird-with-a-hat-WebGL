@@ -33,12 +33,4 @@ class MyTreeBranch extends CGFobject {
         this.cylinder.display();
         this.scene.popMatrix();
     }
-
-    displayInPosition() {        
-        this.scene.pushMatrix();
-        this.scene.translate(this.position[0], this.position[1], this.position[2]);
-        this.scene.rotate(this.rotation, 0, 1, 0);        
-        this.display();
-        this.scene.popMatrix();
-    }
 }
