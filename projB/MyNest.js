@@ -7,8 +7,14 @@ class MyNest extends CGFobject {
 
         this.position = [x, y, z];
 
-        this.ang_inc = Math.PI/24;
+        this.ang_inc = Math.PI/48;
         this.randomizeValues();
+
+        this.leavesMat = new CGFappearance(this.scene);
+        this.leavesMat.setAmbient(1, 1, 1, 1);
+        this.leavesMat.setDiffuse(1, 1, 1, 1);
+        this.leavesMat.loadTexture('images/leaves.jpg');
+        this.leavesMat.setTextureWrap('REPEAT', 'REPEAT');
     }
 
     randomizeValues() {        
@@ -29,12 +35,16 @@ class MyNest extends CGFobject {
             this.scene.rotate(ang, 0, 1, 0);
             this.scene.rotate(Math.PI/6 * this.rand_rotations[i] + 5 * Math.PI/6, -1, 0, 0);
             this.scene.scale(this.rand_sizes[i]+0.1,this.rand_sizes[i]+0.1, 1);
-            this.scene.translate(0, 0, this.branch.branch_length/2 + 1);
+            this.scene.translate(0, 0, this.branch.branch_length/2 + 1.5);
             this.branch.display();
             this.scene.popMatrix();
             i++;
         }
         
+        this.scene.pushMatrix();
+        this.scene.scale(2, 1, 2);
+        this.leavesMat.apply();
         this.circle.display();
+        this.scene.popMatrix();
     }
 }
