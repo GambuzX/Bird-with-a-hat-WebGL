@@ -41,10 +41,6 @@ class MyBird extends CGFobject {
     }
 
     initMaterials() {
-        this.birdMat = new CGFappearance(this.scene);
-        this.birdMat.setAmbient(0.5, 0, 0.9, 1);
-        this.birdMat.setDiffuse(0.5, 0, 0.9, 1);
-
         this.beakMat = new CGFappearance(this.scene);
         this.beakMat.setAmbient(0.95686, 0.71372, 0.25882, 1);
         this.beakMat.setDiffuse(0.95686, 0.71372, 0.25882, 1);
@@ -60,6 +56,24 @@ class MyBird extends CGFobject {
         this.whiteMat = new CGFappearance(this.scene);
         this.whiteMat.setAmbient(1, 1, 1, 1);
         this.whiteMat.setDiffuse(1, 1, 1, 1);
+
+        this.chestMat = new CGFappearance(this.scene);
+        this.chestMat.setAmbient(1, 1, 1, 1);
+        this.chestMat.setDiffuse(1, 1, 1, 1);
+        this.chestMat.loadTexture('images/bird_chest.png');
+        this.chestMat.setTextureWrap('REPEAT', 'REPEAT');
+
+        this.feathersMat = new CGFappearance(this.scene);
+        this.feathersMat.setAmbient(1, 1, 1, 1);
+        this.feathersMat.setDiffuse(1, 1, 1, 1);
+        this.feathersMat.loadTexture('images/bird/purple_fur.jpg');
+        this.feathersMat.setTextureWrap('REPEAT', 'REPEAT');
+
+        this.legMat = new CGFappearance(this.scene);
+        this.legMat.setAmbient(1, 1, 1, 1);
+        this.legMat.setDiffuse(1, 1, 1, 1);
+        this.legMat.loadTexture('images/bird/bird_feet.png');
+        this.legMat.setTextureWrap('REPEAT', 'REPEAT');
     }
 
     initBodyVariables() {
@@ -223,7 +237,7 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         this.scene.rotate(this.cyl_rot_fix , 0, 1, 0);
         this.scene.scale(this.headRadius, 1, this.headRadius);
-        this.birdMat.apply();
+        this.feathersMat.apply();
         this.cylinder.display();
         this.scene.popMatrix();
     }
@@ -233,14 +247,15 @@ class MyBird extends CGFobject {
         this.scene.scale(this.bodyRadius, this.bodyRadius, this.bodyLength);
         this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
-        this.birdMat.apply();
+        this.feathersMat.apply();
         this.cylinder.display();
         this.scene.popMatrix();
 
         this.scene.pushMatrix();
         this.scene.translate(0, 0, 0.01);
         this.scene.scale(this.frontFeathersRadius, this.frontFeathersRadius, 1);
-        this.whiteMat.apply();
+        this.scene.rotate(-Math.PI/2, 1, 0, 0);
+        this.chestMat.apply();
         this.circle.display();
         this.scene.popMatrix();
     }
@@ -251,7 +266,7 @@ class MyBird extends CGFobject {
         this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
         this.scene.translate(this.bodyRadius, 0, -this.bodyLength/2);
         this.scene.rotate(this.base_wings_rot - this.wingsRot, 0, 0, 1);
-        this.birdMat.apply();
+        this.feathersMat.apply();
         this.birdWing.display();
         this.scene.popMatrix();
 
@@ -293,6 +308,7 @@ class MyBird extends CGFobject {
         this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
         this.scene.rotate( this.eye_rotation, 0, 1, 0);
         this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.whiteMat.apply();
         this.circle.display();
         this.scene.popMatrix();
@@ -302,6 +318,7 @@ class MyBird extends CGFobject {
         this.scene.translate(-this.eye_x_offset, this.eye_y_offset, this.face_shift);
         this.scene.rotate( -this.eye_rotation, 0, 1, 0);
         this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.circle.display();
         this.scene.popMatrix();
 
@@ -311,6 +328,7 @@ class MyBird extends CGFobject {
         this.scene.rotate(this.eye_rotation, 0, 1, 0);
         this.scene.translate(0, 0, 0.01);
         this.scene.scale(this.eye_size, this.eye_size, this.eye_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.eyeMat.apply();
         this.circle.display();
         this.scene.popMatrix();
@@ -321,6 +339,7 @@ class MyBird extends CGFobject {
         this.scene.rotate( -this.eye_rotation, 0, 1, 0);
         this.scene.translate(0, 0, 0.01);
         this.scene.scale(this.eye_size, this.eye_size, this.eye_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.circle.display();
         this.scene.popMatrix();
     }
@@ -338,6 +357,7 @@ class MyBird extends CGFobject {
     draw_tail() {
         this.scene.pushMatrix();
         this.scene.translate(0, 0, -this.bodyLength);
+        this.feathersMat.apply();
         this.birdTail.display();
         this.scene.popMatrix();
     }
@@ -348,7 +368,7 @@ class MyBird extends CGFobject {
         this.scene.translate(this.leg_x_offset, 0, this.leg_z_offset);
         this.scene.rotate(Math.PI + this.leg_rotation, 1, 0, 0);
         this.scene.scale(this.leg_radius, this.leg_length, this.leg_radius);
-        this.beakMat.apply();
+        this.legMat.apply();
         this.cylinder.display();
         this.scene.popMatrix();
 
@@ -357,6 +377,7 @@ class MyBird extends CGFobject {
         this.scene.translate(this.leg_x_offset, this.claw_y_offset, this.claw_z_offset);
         this.scene.rotate(this.leg_rotation, 1, 0, 0);
         this.scene.scale(this.claw_scale, this.claw_scale, this.claw_scale);
+        this.legMat.apply();
         this.birdClaw.display();
         this.scene.popMatrix();
 
@@ -365,7 +386,7 @@ class MyBird extends CGFobject {
         this.scene.translate(-this.leg_x_offset, 0, this.leg_z_offset);
         this.scene.rotate(Math.PI + this.leg_rotation, 1, 0, 0);
         this.scene.scale(this.leg_radius, this.leg_length, this.leg_radius);
-        this.beakMat.apply();
+        this.legMat.apply();
         this.cylinder.display();
         this.scene.popMatrix();
 
@@ -374,6 +395,7 @@ class MyBird extends CGFobject {
         this.scene.translate(-this.leg_x_offset, this.claw_y_offset, this.claw_z_offset);
         this.scene.rotate(this.leg_rotation, 1, 0, 0);
         this.scene.scale(this.claw_scale, this.claw_scale, this.claw_scale);
+        this.legMat.apply();
         this.birdClaw.display();
         this.scene.popMatrix();
     }

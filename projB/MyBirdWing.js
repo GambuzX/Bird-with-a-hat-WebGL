@@ -6,11 +6,6 @@ class MyBirdWing extends CGFobject {
         this.quad = new MyQuad(scene);
         this.triangle = new MyTriangleSmall(scene);
 
-        this.birdMat = new CGFappearance(this.scene);
-        this.birdMat.setAmbient(0.5, 0, 0.9, 1);
-        this.birdMat.setDiffuse(0.5, 0, 0.9, 1);
-
-
         this.wingSquareLength = 1;
         this.wingTipLength = 1;
         this.wingRot = -Math.PI/6;
@@ -20,7 +15,6 @@ class MyBirdWing extends CGFobject {
         this.scene.pushMatrix();
         this.scene.translate(this.wingSquareLength/2, 0, 0);
         this.scene.rotate(-Math.PI/2, 1, 0, 0);
-        this.birdMat.apply();
         this.quad.display();
         this.scene.popMatrix();
 

@@ -35,9 +35,6 @@ class MyNest extends CGFobject {
             i++;
         }
         
-        this.scene.pushMatrix();
-        this.scene.rotate(Math.PI/2, 1, 0, 0);
         this.circle.display();
-        this.scene.popMatrix();
     }
 }

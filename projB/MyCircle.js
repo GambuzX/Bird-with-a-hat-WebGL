@@ -6,51 +6,56 @@
 class MyCircle extends CGFobject {
 	constructor(scene, n_vertices) {
 		super(scene);
-		this.n_vertices = n_vertices;
+		this.slices = n_vertices;
 		this.radius = 1;
 		this.initBuffers();
 	}
 	initBuffers() {
 
-		this.vertices = [
-			0,0,0
-        ];
-        
-        this.normals = [
-            0,0,1
-        ];
+		this.vertices = [];
+		this.indices = [];
+		this.normals = [];
+		this.texCoords = [];
 
-		//Calculate vertices
-		for (let i = 0; i < this.n_vertices; i++) {
-			let angle = 2*Math.PI/this.n_vertices * i;
+		let ang = 0;
+		let ang_inc = 2*Math.PI/this.slices;
+		let n_verts = this.slices*2;
 
-			let x = this.radius * Math.cos(angle);
-			let y = this.radius * Math.sin(angle);
+		for (var i = 0; i < this.slices; i++) {
 
-            this.vertices.push(x, y, 0);
-            this.normals.push(0,0,1);
+			var sa=Math.sin(ang);
+            var ca=Math.cos(ang);
+
+			/* VERTICES */
+            this.vertices.push(ca, 0, -sa);
+            this.vertices.push(ca, 0, -sa);
+
+            /* TEXTURE COORDS */
+			this.texCoords.push(Math.cos(ang)/2 + 0.5, Math.sin(ang)/2 + 0.5);
+			this.texCoords.push(Math.cos(ang)/2 + 0.5, Math.sin(ang)/2 + 0.5);
+
+            /* INDICES */
+			this.indices.push((i*2) % n_verts, ((i+1)*2) % n_verts, n_verts);
+			this.indices.push(((i+1)*2+1) % n_verts, (i*2+1) % n_verts, n_verts+1);
+
+            /* NORMALS */
+			this.normals.push(0,1,0);
+			this.normals.push(0,-1,0);
+
+            ang += ang_inc;
 		}
 
-		//Counter-clockwise reference of vertices
-		this.indices = [
-		];
+		this.vertices.push(0,0,0);
+		this.vertices.push(0,0,0);
 
-		//Front face
-		for (let i = 0; i < this.n_vertices; i++) {
-			this.indices.push(0);
-			this.indices.push((i % this.n_vertices) + 1);
-			this.indices.push(((i+1) % this.n_vertices) + 1);
-		}
-		//Back face
-		for (let i = 0; i < this.n_vertices; i++) {
-			this.indices.push(0);
-			this.indices.push(((i+1) % this.n_vertices) + 1);
-			this.indices.push((i % this.n_vertices) + 1);
-		}
+		this.texCoords.push(0.5,0.5);
+		this.texCoords.push(0.5,0.5);
+		
+		this.normals.push(0, 1,0);
+		this.normals.push(0,-1,0);
 
-
-		this.primitiveType = this.scene.gl.TRIANGLES;
-		this.initGLBuffers();
+        this.primitiveType = this.scene.gl.TRIANGLES;
+        this.initGLBuffers();
 	}
 }
 
