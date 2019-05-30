@@ -23,7 +23,10 @@ class MyScene extends CGFscene {
 
         // Initialize scene objects
         this.axis = new CGFaxis(this);
-        this.bird = new MyBird(this);
+        this.bird1 = new MyBird(this);
+        this.bird2 = new MyBird(this);
+        this.bird1.setSimplify(true);
+        this.bird2.setSimplify(true);
         this.terrain = new MyTerrain(this);        
         this.branches = [
             new MyTreeBranch(this, -8, 0, 6, 0, 3, 0.3), 
@@ -35,6 +38,7 @@ class MyScene extends CGFscene {
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
+        this.scaleFactor = 1;
     }
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
@@ -52,29 +56,55 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
-        this.bird.update(t, this.speedFactor);
+        this.bird1.update(t, this.speedFactor);
+        this.bird2.update(t, this.speedFactor);
         this.checkKeys();
+    }
+
+    updateBirdsScale() {
+        this.bird1.setScaleFactor(this.scaleFactor);
+        this.bird2.setScaleFactor(this.scaleFactor);
     }
 
     checkKeys() {
         // Check for keys codes e.g. in https://keycode.info/
-        if (this.gui.isKeyPressed("KeyW")) {
-            this.bird.accelerate(this.speedFactor)
+        if (this.gui.isKeyPressed("KeyW")) {    
+            this.bird1.accelerate(this.speedFactor)
         }
         if (this.gui.isKeyPressed("KeyS")) {
-            this.bird.accelerate(-this.speedFactor);
+            this.bird1.accelerate(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyD")) {
-            this.bird.turn((Math.PI/6) / 3 * -this.speedFactor);
+            this.bird1.turn((Math.PI/6) / 3 * -this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyA")) {
-            this.bird.turn((Math.PI/6) / 3 * this.speedFactor);
+            this.bird1.turn((Math.PI/6) / 3 * this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyR")) {
-            this.bird.reset();
+            this.bird1.reset();
         }
         if (this.gui.isKeyPressed("KeyP")) {
-            this.bird.dropBird();
+            this.bird1.dropBird();
+        }
+
+        
+        if (this.gui.isKeyPressed("ArrowUp")) {
+            this.bird2.accelerate(this.speedFactor)
+        }
+        if (this.gui.isKeyPressed("ArrowDown")) {
+            this.bird2.accelerate(-this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("ArrowRight")) {
+            this.bird2.turn((Math.PI/6) / 3 * -this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("ArrowLeft")) {
+            this.bird2.turn((Math.PI/6) / 3 * this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("ControlRight")) {
+            this.bird2.reset();
+        }
+        if (this.gui.isKeyPressed("ShiftRight")) {
+            this.bird2.dropBird();
         }
     }
 
@@ -119,7 +149,8 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.translate(0, ground_height, 0);
 
-        this.bird.display();
+        this.bird1.display();
+        this.bird2.display();
 
         /* Draw branches */
         for (let i = 0 ; i < this.branches.length; i++) {        

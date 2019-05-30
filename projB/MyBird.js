@@ -58,6 +58,8 @@ class MyBird extends CGFobject {
         this.branches_z_offset = this.claw_z_offset;
         this.catchBranchDist = 1;
         this.dropNestDist = 1.5;
+
+        this.simplify = false;
     }
 
     initMaterials() {
@@ -204,6 +206,10 @@ class MyBird extends CGFobject {
         this.branches.splice(i, 1);
     }
 
+    setScaleFactor(scale) {
+        this.scaleFactor = scale;
+    }
+
     updatePosition() {
         let orientation_v = [ Math.sin(this.orientation), 0, Math.cos(this.orientation)];
 
@@ -239,20 +245,31 @@ class MyBird extends CGFobject {
         this.position = [0,0,0];
     }
 
+    setSimplify(val) {
+        this.simplify = val;
+    }
+
     draw_bird() {
         this.scene.pushMatrix();
         this.scene.translate(0, this.headHeight + this.bodyRadius, 0);
         this.draw_head();
-        this.draw_brows();
         this.draw_eyes();
         this.draw_beak();
-        this.draw_hat();
+        if(!this.simplify)  {
+            this.draw_brows();
+            this.draw_eye_sockets();
+            this.draw_hat();
+        }
         this.scene.popMatrix();
 
         this.draw_body();
         this.draw_wings();
-        this.draw_tail();
-        this.draw_claws();
+        if(!this.simplify)  {
+            this.draw_chest();
+            this.draw_tail();
+            this.draw_butt();
+            this.draw_claws();
+        }
     }
 
     draw_head() {
@@ -265,7 +282,6 @@ class MyBird extends CGFobject {
     }
     
     draw_body() {
-        /* Body */
         this.scene.pushMatrix();
         this.scene.scale(this.bodyRadius, this.bodyRadius, this.bodyLength);
         this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
@@ -273,8 +289,10 @@ class MyBird extends CGFobject {
         this.feathersMat.apply();
         this.cylinder.display();
         this.scene.popMatrix();
+    }
 
-        /* Set chest shader hader */
+    draw_chest() {
+        /* Set chest shader */
         this.scene.setActiveShader(this.chestShader);
         this.chestTexture.bind(0);
         this.heightMap.bind(1);
@@ -332,26 +350,6 @@ class MyBird extends CGFobject {
     }
 
     draw_eyes() {
-
-        /* Left Eye Socket*/
-        this.scene.pushMatrix();
-        this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
-        this.scene.rotate( this.eye_rotation, 0, 1, 0);
-        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
-        this.scene.rotate(Math.PI/2, 1, 0, 0);
-        this.whiteMat.apply();
-        this.circle.display();
-        this.scene.popMatrix();
-
-        /* Right Eye Socket*/
-        this.scene.pushMatrix();
-        this.scene.translate(-this.eye_x_offset, this.eye_y_offset, this.face_shift);
-        this.scene.rotate( -this.eye_rotation, 0, 1, 0);
-        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
-        this.scene.rotate(Math.PI/2, 1, 0, 0);
-        this.circle.display();
-        this.scene.popMatrix();
-
         /* Left Eye */
         this.scene.pushMatrix();
         this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
@@ -374,6 +372,27 @@ class MyBird extends CGFobject {
         this.scene.popMatrix();
     }
 
+    draw_eye_sockets() {
+        /* Left Eye Socket*/
+        this.scene.pushMatrix();
+        this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
+        this.scene.rotate( this.eye_rotation, 0, 1, 0);
+        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
+        this.whiteMat.apply();
+        this.circle.display();
+        this.scene.popMatrix();
+
+        /* Right Eye Socket*/
+        this.scene.pushMatrix();
+        this.scene.translate(-this.eye_x_offset, this.eye_y_offset, this.face_shift);
+        this.scene.rotate( -this.eye_rotation, 0, 1, 0);
+        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
+        this.circle.display();
+        this.scene.popMatrix();
+    }
+
     draw_beak() {
         this.scene.pushMatrix();
         this.scene.translate(0, this.beak_y_offset, this.face_shift);
@@ -386,18 +405,20 @@ class MyBird extends CGFobject {
 
     draw_tail() {
         this.scene.pushMatrix();
+        this.scene.translate(0, 0, -this.bodyLength-this.butt_length+0.1);
+        this.feathersMat.apply();
+        this.birdTail.display();
+        this.scene.popMatrix();
+    }
+
+    draw_butt() {
+        this.scene.pushMatrix();
         this.scene.translate(0, 0, -this.bodyLength);
         this.scene.scale(this.bodyRadius, this.bodyRadius, this.butt_length);
         this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
         this.scene.rotate(Math.PI/2, -1, 0, 0);
         this.feathersMat.apply();
         this.halfSphere.display();
-        this.scene.popMatrix();
-
-        this.scene.pushMatrix();
-        this.scene.translate(0, 0, -this.bodyLength-this.butt_length+0.1);
-        this.feathersMat.apply();
-        this.birdTail.display();
         this.scene.popMatrix();
     }
 
