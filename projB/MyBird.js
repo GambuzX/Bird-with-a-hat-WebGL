@@ -13,6 +13,17 @@ class MyBird extends CGFobject {
         this.birdWing = new MyBirdWing(scene);
         this.birdTail = new MyBirdTail(scene);
         this.birdHat = new MyBirdHat(scene);
+        this.plane = new Plane(scene, 10);
+
+        /* Shader */
+        this.chestTexture = new CGFtexture(this.scene, "images/bird/bird_chest.png");
+        this.heightMap = new CGFtexture(this.scene, "images/bird/chest-heightmap.jpg");
+
+        this.chestShader = new CGFshader(this.scene.gl,"shaders/birdChest.vert", "shaders/birdChest.frag");
+        this.chestShader.setUniformsValues({
+            chestTexture : 0,
+            heightMap : 1        
+        });
 
         /* Animations variables */
         this.animShift = 0;
@@ -82,7 +93,7 @@ class MyBird extends CGFobject {
 
         this.bodyLength = 1.5;
         this.bodyRadius = 0.8;
-        this.frontFeathersRadius = this.bodyRadius * Math.sin(int_cyl_angle/2);
+        this.frontFeathersSide = this.bodyRadius;
 
         this.headHeight = -0.2;
         this.headRadius = 0.8;
@@ -251,13 +262,20 @@ class MyBird extends CGFobject {
         this.cylinder.display();
         this.scene.popMatrix();
 
+        /* Set chest shader hader */
+        this.scene.setActiveShader(this.chestShader);
+        this.chestTexture.bind(0);
+        this.heightMap.bind(1);
+
         this.scene.pushMatrix();
-        this.scene.translate(0, 0, 0.01);
-        this.scene.scale(this.frontFeathersRadius, this.frontFeathersRadius, 1);
-        this.scene.rotate(-Math.PI/2, 1, 0, 0);
+        this.scene.translate(0, -0.05, -0.1);
+        this.scene.scale(this.frontFeathersSide*1.2, this.frontFeathersSide*1.2, 1);
         this.chestMat.apply();
-        this.circle.display();
+        this.plane.display();
         this.scene.popMatrix();
+
+        /* Reset shader */
+        this.scene.setActiveShader(this.scene.defaultShader);
     }
 
     draw_wings() {
