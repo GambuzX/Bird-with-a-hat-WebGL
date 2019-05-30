@@ -14,6 +14,7 @@ class MyBird extends CGFobject {
         this.birdTail = new MyBirdTail(scene);
         this.birdHat = new MyBirdHat(scene);
         this.plane = new Plane(scene, 10);
+        this.halfSphere = new MyHalfSphere(scene, 1, 50, 5);
 
         /* Shader */
         this.chestTexture = new CGFtexture(this.scene, "images/bird/bird_chest.png");
@@ -126,6 +127,8 @@ class MyBird extends CGFobject {
         this.claw_z_offset = this.leg_z_offset - this.leg_length * Math.sin(this.leg_rotation);
 
         this.base_wings_rot = Math.PI/5;
+
+        this.butt_length = 0.5;
     }
 
     update(t, speedFactor) {
@@ -375,6 +378,15 @@ class MyBird extends CGFobject {
     draw_tail() {
         this.scene.pushMatrix();
         this.scene.translate(0, 0, -this.bodyLength);
+        this.scene.scale(this.bodyRadius, this.bodyRadius, this.butt_length);
+        this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
+        this.scene.rotate(Math.PI/2, -1, 0, 0);
+        this.feathersMat.apply();
+        this.halfSphere.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0, -this.bodyLength-this.butt_length+0.1);
         this.feathersMat.apply();
         this.birdTail.display();
         this.scene.popMatrix();
