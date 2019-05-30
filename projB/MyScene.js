@@ -26,10 +26,10 @@ class MyScene extends CGFscene {
         this.bird = new MyBird(this);
         this.terrain = new MyTerrain(this);        
         this.branches = [
-            new MyTreeBranch(this, -8, 0, 6, 0), 
-            new MyTreeBranch(this, 5, 0, 8, Math.PI/3), 
-            new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3), 
-            new MyTreeBranch(this, -15, 0, -7, Math.PI/2)
+            new MyTreeBranch(this, -8, 0, 6, 0, 3, 0.3), 
+            new MyTreeBranch(this, 5, 0, 8, Math.PI/3, 3, 0.3), 
+            new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3, 3, 0.3), 
+            new MyTreeBranch(this, -15, 0, -7, Math.PI/2, 3, 0.3)
         ];
         this.nest = new MyNest(this, 0, 0, 0);
 

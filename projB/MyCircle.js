@@ -4,9 +4,9 @@
  * @param scene - Reference to MyScene object
  */
 class MyCircle extends CGFobject {
-	constructor(scene) {
+	constructor(scene, n_vertices) {
 		super(scene);
-		this.n_vertices = 50;
+		this.n_vertices = n_vertices;
 		this.radius = 1;
 		this.initBuffers();
 	}
