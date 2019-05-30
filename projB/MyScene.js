@@ -109,8 +109,9 @@ class MyScene extends CGFscene {
         this.popMatrix();
 
         this.pushMatrix();
+        this.translate(0,15,0);
         this.rotate(Math.PI, 0,0,1);
-        //this.lightning.display();
+        this.lightning.display();
         this.popMatrix();
         // ---- END Primitive drawing section
     }

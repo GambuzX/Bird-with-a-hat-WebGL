@@ -38,6 +38,7 @@ class MyLightning extends MyLSystem {
     }
 
     display(){
+        this.scene.setGlobalAmbientLight(1,1,1,1);
         this.scene.pushMatrix();
         this.scene.scale(this.scale, this.scale, this.scale);
 
@@ -103,5 +104,6 @@ class MyLightning extends MyLSystem {
             this.scene.popMatrix();
         }
         this.scene.popMatrix();
+        this.scene.setGlobalAmbientLight(0.1,0.1,0.1,1);
     }
 }
