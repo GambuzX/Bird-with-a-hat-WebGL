@@ -4,6 +4,7 @@ class MyNest extends CGFobject {
 
         this.circle = new MyCircle(scene, 8);
         this.branch = new MyTreeBranch(scene, 0, 0, 0, 0, 2, 0.2);
+        this.egg = new MyEgg(scene);
 
         this.position = [x, y, z];
 
@@ -45,6 +46,26 @@ class MyNest extends CGFobject {
         this.scene.scale(2, 1, 2);
         this.leavesMat.apply();
         this.circle.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(-0.5, 0, -0.5);
+        this.scene.rotate(Math.PI/6, -1, 0, 1);
+        this.scene.scale(0.8, 0.8, 0.8);
+        this.egg.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(0.7, 0, 0);
+        this.scene.rotate(Math.PI/5, 0, 0, -1);
+        this.egg.display();
+        this.scene.popMatrix();
+
+        this.scene.pushMatrix();
+        this.scene.translate(-0.2, 0, 0.6);
+        this.scene.rotate(Math.PI/6, 1, 0, 1);
+        this.scene.scale(1.1, 1.1, 1.1);
+        this.egg.display();
         this.scene.popMatrix();
     }
 }
