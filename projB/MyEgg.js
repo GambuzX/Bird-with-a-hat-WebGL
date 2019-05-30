@@ -1,6 +1,9 @@
 class MyEgg extends CGFobject {
-    constructor(scene) {
+    constructor(scene, x, y, z, rot) {
         super(scene);
+
+        this.rotation = rot;
+        this.position = [x,y,z];
 
         this.sphere = new MySphere(scene, 1, 50, 50);
 

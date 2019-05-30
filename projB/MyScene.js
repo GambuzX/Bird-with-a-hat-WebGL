@@ -184,11 +184,15 @@ class MyScene extends CGFscene {
         this.nests[1].display();
         this.popMatrix();
 
+        this.nests[1].displayEggs();
+
         this.pushMatrix();
         this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
         this.scale(0.5, 0.5, 0.5);
         this.nests[2].display();
         this.popMatrix();
+
+        this.nests[2].displayEggs();
 
         this.popMatrix();
         // ---- END Primitive drawing section
