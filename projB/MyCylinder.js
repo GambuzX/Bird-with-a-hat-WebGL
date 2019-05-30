@@ -14,9 +14,9 @@ class MyCylinder extends CGFobject {
 
 		let ang = 0;
 		let ang_inc = 2*Math.PI/this.slices;
-		let n_verts = this.slices*4;
+		let n_verts = (this.slices+1)*4;
 
-		for (var i = 0; i < this.slices; i++) {
+		for (var i = 0; i <= this.slices; i++) {
 
 			var sa=Math.sin(ang);
             var ca=Math.cos(ang);

@@ -60,7 +60,7 @@ class MyBird extends CGFobject {
         this.chestMat = new CGFappearance(this.scene);
         this.chestMat.setAmbient(1, 1, 1, 1);
         this.chestMat.setDiffuse(1, 1, 1, 1);
-        this.chestMat.loadTexture('images/bird_chest.png');
+        this.chestMat.loadTexture('images/bird/bird_chest.png');
         this.chestMat.setTextureWrap('REPEAT', 'REPEAT');
 
         this.feathersMat = new CGFappearance(this.scene);
