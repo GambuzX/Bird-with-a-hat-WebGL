@@ -23,6 +23,7 @@ serialInclude(['../lib/CGF.js',
                'MyBirdHat.js',
                'MySphere.js',
                'MyEgg.js',
+               'MyHalfSphere.js',
 main=function()
 {
     var app = new CGFapplication(document.body);
