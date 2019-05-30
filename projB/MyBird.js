@@ -1,8 +1,13 @@
 class MyBird extends CGFobject {
 
-    constructor(scene) {
+    constructor(scene, ID, simplify, x, y, z, ori) {
         super(scene);
         
+        this.birdID = ID;
+        this.simplify = simplify;
+        this.initialPosition = [0 || x, 0 || y, 0 || z];
+        this.initialOri = ori;
+
         this.initObjects();
         this.initShaders();
         this.initBodyVariables();
@@ -40,10 +45,10 @@ class MyBird extends CGFobject {
         /* Bird own animation */
         this.animShift = 0;
         this.wingsRot = 0;
-        this.orientation = 0;
+        this.orientation = this.initialOri;
         this.speed = 0;
-        this.position = [0, 0, 0];
         this.scaleFactor = 1;
+        this.position = this.initialPosition;
         
         /* Dropping state variables */
         this.currentState = 0;
@@ -58,8 +63,6 @@ class MyBird extends CGFobject {
         this.branches_z_offset = this.claw_z_offset;
         this.catchBranchDist = 1;
         this.dropNestDist = 1.5;
-
-        this.simplify = false;
     }
 
     initMaterials() {
@@ -184,14 +187,15 @@ class MyBird extends CGFobject {
             if (this.scene.euclidianDistance(this.position, this.scene.branches[i].position) <= this.catchBranchDist*this.scaleFactor) {
                 this.addBranch(this.scene.branches[i]);
                 this.scene.removeBranch(i);
+                break;
             }
         }
     }
 
     dropBranchesInNest() {
-        if (this.scene.euclidianDistance(this.position, this.scene.nest.position) < this.dropNestDist*this.scaleFactor) {
+        if (this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.dropNestDist*this.scaleFactor) {
             for (let i = this.branches.length-1; i >= 0; i--) {
-                this.branches[i].position = this.scene.nest.position;
+                this.branches[i].position = this.scene.nests[this.birdID].position;
                 this.scene.addBranch(this.branches[i]);
                 this.removeBranch(i);
             }
@@ -242,11 +246,7 @@ class MyBird extends CGFobject {
     reset() {
         this.speed = 0;
         this.orientation = 0;
-        this.position = [0,0,0];
-    }
-
-    setSimplify(val) {
-        this.simplify = val;
+        this.position = this.initialPosition;
     }
 
     draw_bird() {
@@ -472,8 +472,12 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         for (let i = 0; i < this.branches.length; i++) {
             this.scene.pushMatrix();
-            this.scene.translate(0, this.branches_y_offset*this.scaleFactor, this.branches_z_offset*this.scaleFactor);
-            this.scene.rotate(Math.PI/2, 0, 1, 0);
+            if (this.simplify)  {
+                this.scene.translate(0, -this.bodyRadius*this.scaleFactor, 0);
+            } else {
+                this.scene.translate(0, this.branches_y_offset*this.scaleFactor, this.branches_z_offset*this.scaleFactor);
+                this.scene.rotate(Math.PI/2, 0, 1, 0);
+            }
             this.branches[i].display();
             this.scene.popMatrix();
         }

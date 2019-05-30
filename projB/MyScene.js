@@ -21,12 +21,17 @@ class MyScene extends CGFscene {
         this.enableTextures(true);
         this.setUpdatePeriod(50);
 
+        // Minigame
+        this.p1_pos = [-10, 0, 0];
+        this.p2_pos = [5, 0, 0];
+        this.p1_id = 1;
+        this.p2_id = 2;
+
         // Initialize scene objects
         this.axis = new CGFaxis(this);
-        this.bird1 = new MyBird(this);
-        this.bird2 = new MyBird(this);
-        this.bird1.setSimplify(true);
-        this.bird2.setSimplify(true);
+        this.bird = new MyBird(this, 0, false);
+        this.bird1 = new MyBird(this, this.p1_id, true, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], Math.PI/2);
+        this.bird2 = new MyBird(this, this.p2_id, true, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], -Math.PI/2);
         this.terrain = new MyTerrain(this);        
         this.branches = [
             new MyTreeBranch(this, -8, 0, 6, 0, 3, 0.3), 
@@ -34,7 +39,12 @@ class MyScene extends CGFscene {
             new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3, 3, 0.3), 
             new MyTreeBranch(this, -15, 0, -7, Math.PI/2, 3, 0.3)
         ];
-        this.nest = new MyNest(this, 0, 0, 0);
+
+        this.nests = [
+            new MyNest(this, 0, 0, 0, 0),
+            new MyNest(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
+            new MyNest(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
+        ];
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -149,8 +159,13 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.translate(0, ground_height, 0);
 
+        this.pushMatrix();
         this.bird1.display();
+        this.popMatrix();
+
+        this.pushMatrix();
         this.bird2.display();
+        this.popMatrix();
 
         /* Draw branches */
         for (let i = 0 ; i < this.branches.length; i++) {        
@@ -164,8 +179,15 @@ class MyScene extends CGFscene {
         /* END draw objects at ground height */
 
         this.pushMatrix();
+        this.translate(this.nests[1].position[0], this.nests[1].position[1], this.nests[1].position[2]);
         this.scale(0.5, 0.5, 0.5);
-        this.nest.display();
+        this.nests[1].display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
+        this.scale(0.5, 0.5, 0.5);
+        this.nests[2].display();
         this.popMatrix();
 
         this.popMatrix();

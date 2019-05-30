@@ -1,6 +1,8 @@
 class MyNest extends CGFobject {
-    constructor(scene, x, y, z) {
+    constructor(scene, x, y, z, birdID) {
         super(scene);
+
+        this.birdID = birdID;
 
         this.circle = new MyCircle(scene, 8);
         this.branch = new MyTreeBranch(scene, 0, 0, 0, 0, 2, 0.2);
@@ -26,6 +28,10 @@ class MyNest extends CGFobject {
             this.rand_rotations.push(Math.random());
             this.rand_sizes.push(Math.random());
         }
+    }
+
+    getBirdID() {
+        return birdID;
     }
 
     display() {
