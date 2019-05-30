@@ -26,6 +26,7 @@ class MyScene extends CGFscene {
         this.p2_pos = [5, 0, 0];
         this.p1_id = 1;
         this.p2_id = 2;
+        this.minigame = false;
 
         // Initialize scene objects
         this.axis = new CGFaxis(this);
@@ -66,37 +67,66 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
-        this.bird1.update(t, this.speedFactor);
-        this.bird2.update(t, this.speedFactor);
+        if (this.minigame) {
+            this.bird1.update(t, this.speedFactor);
+            this.bird2.update(t, this.speedFactor);
+        }
+        else {
+            this.bird.update(t, this.speedFactor);
+        }
         this.checkKeys();
     }
 
     updateBirdsScale() {
+        this.bird.setScaleFactor(this.scaleFactor);
         this.bird1.setScaleFactor(this.scaleFactor);
         this.bird2.setScaleFactor(this.scaleFactor);
     }
 
+    changeState() {
+        /* Reset birds */
+        this.bird.reset();
+        this.bird1.reset();
+        this.bird2.reset();
+
+        /* Retrieve grabbed branches */
+        let branches = this.bird.removeBranches();
+        for (let i = 0 ; i < branches.length; i++) this.addBranch(branches[i]);
+
+        branches = this.bird1.removeBranches();
+        for (let i = 0 ; i < branches.length; i++) this.addBranch(branches[i]);
+
+        branches = this.bird2.removeBranches();
+        for (let i = 0 ; i < branches.length; i++) this.addBranch(branches[i]);
+
+        /* Reset branches */
+        for (let i = 0 ; i < this.branches.length; i++) this.branches[i].reset();
+    }
+
     checkKeys() {
+
+        let first_bird = this.minigame ? this.bird1 : this.bird;
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {    
-            this.bird1.accelerate(this.speedFactor)
+            first_bird.accelerate(this.speedFactor)
         }
         if (this.gui.isKeyPressed("KeyS")) {
-            this.bird1.accelerate(-this.speedFactor);
+            first_bird.accelerate(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyD")) {
-            this.bird1.turn((Math.PI/6) / 3 * -this.speedFactor);
+            first_bird.turn((Math.PI/6) / 3 * -this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyA")) {
-            this.bird1.turn((Math.PI/6) / 3 * this.speedFactor);
+            first_bird.turn((Math.PI/6) / 3 * this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyR")) {
-            this.bird1.reset();
+            first_bird.reset();
         }
         if (this.gui.isKeyPressed("KeyP")) {
-            this.bird1.dropBird();
+            first_bird.dropBird();
         }
 
+        if (!this.minigame) return;
         
         if (this.gui.isKeyPressed("ArrowUp")) {
             this.bird2.accelerate(this.speedFactor)
@@ -159,13 +189,36 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.translate(0, ground_height, 0);
 
-        this.pushMatrix();
-        this.bird1.display();
-        this.popMatrix();
+        if (this.minigame) {
+            /* Birds */
+            this.bird1.display();
+            this.bird2.display();
 
-        this.pushMatrix();
-        this.bird2.display();
-        this.popMatrix();
+            /* Nests */
+            this.pushMatrix();
+            this.translate(this.nests[1].position[0], this.nests[1].position[1], this.nests[1].position[2]);
+            this.scale(0.5, 0.5, 0.5);
+            this.nests[1].display();
+            this.popMatrix();
+            this.nests[1].displayEggs();
+
+            this.pushMatrix();
+            this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
+            this.scale(0.5, 0.5, 0.5);
+            this.nests[2].display();
+            this.popMatrix();
+            this.nests[2].displayEggs();
+        }
+        else {
+            this.bird.display();
+
+            this.pushMatrix();
+            this.translate(this.nests[0].position[0], this.nests[0].position[1], this.nests[0].position[2]);
+            this.scale(0.5, 0.5, 0.5);
+            this.nests[0].display();
+            this.popMatrix();
+            this.nests[0].displayEggs();
+        }
 
         /* Draw branches */
         for (let i = 0 ; i < this.branches.length; i++) {        
@@ -176,23 +229,7 @@ class MyScene extends CGFscene {
             this.branches[i].display();
             this.popMatrix();
         }
-        /* END draw objects at ground height */
-
-        this.pushMatrix();
-        this.translate(this.nests[1].position[0], this.nests[1].position[1], this.nests[1].position[2]);
-        this.scale(0.5, 0.5, 0.5);
-        this.nests[1].display();
-        this.popMatrix();
-
-        this.nests[1].displayEggs();
-
-        this.pushMatrix();
-        this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
-        this.scale(0.5, 0.5, 0.5);
-        this.nests[2].display();
-        this.popMatrix();
-
-        this.nests[2].displayEggs();
+        /* END draw objects at ground height */        
 
         this.popMatrix();
         // ---- END Primitive drawing section

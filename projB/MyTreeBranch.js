@@ -5,7 +5,8 @@ class MyTreeBranch extends CGFobject {
         
         this.cylinder = new MyCylinder(scene, 6);
 
-        this.position = [x,y,z];
+        this.initialPosition = [x,y,z];
+        this.position = this.initialPosition;
         this.rotation = rot;
 
         this.branch_length = length;
@@ -20,8 +21,8 @@ class MyTreeBranch extends CGFobject {
         this.woodTex.setTextureWrap('REPEAT', 'REPEAT');
     }
 
-    setPosition(x,y,z) {
-        this.position = [x,y,z];
+    reset() {
+        this.position = this.initialPosition;
     }
 
     display() {

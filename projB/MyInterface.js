@@ -18,6 +18,7 @@ class MyInterface extends CGFinterface {
 
         this.gui.add(this.scene, "speedFactor", 0.1, 3.0).step(0.1).name("speedFactor");
         this.gui.add(this.scene, "scaleFactor", 0.5, 3.0).step(0.1).name("scaleFactor").onChange(this.scene.updateBirdsScale.bind(this.scene));
+        this.gui.add(this.scene, "minigame").name("Mini Game").onChange(this.scene.changeState.bind(this.scene));
 
         this.initKeys();
         

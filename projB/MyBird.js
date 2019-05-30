@@ -5,8 +5,8 @@ class MyBird extends CGFobject {
         
         this.birdID = ID;
         this.simplify = simplify;
-        this.initialPosition = [0 || x, 0 || y, 0 || z];
-        this.initialOri = ori;
+        this.initialPosition = [x || 0, y || 0, z || 0];
+        this.initialOri = ori || 0;
 
         this.initObjects();
         this.initShaders();
@@ -210,6 +210,12 @@ class MyBird extends CGFobject {
         this.branches.splice(i, 1);
     }
 
+    removeBranches() {
+        let branches = this.branches;
+        this.branches = [];
+        return branches;
+    }
+
     setScaleFactor(scale) {
         this.scaleFactor = scale;
     }
@@ -245,7 +251,7 @@ class MyBird extends CGFobject {
 
     reset() {
         this.speed = 0;
-        this.orientation = 0;
+        this.orientation = this.initialOri;
         this.position = this.initialPosition;
     }
 
