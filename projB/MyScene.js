@@ -64,6 +64,7 @@ class MyScene extends CGFscene {
             new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id),
             new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
         ];
+        this.total_eggs = this.eggs.length;
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -108,11 +109,23 @@ class MyScene extends CGFscene {
 
     updateGameScore() {
         let scores = [0, 0];
-        for (let i = 0; i < this.eggs.length; i++)
+        for (let i = 0; i < this.total_eggs; i++)
             scores[this.eggs[i].getBirdID()-1] += 1;
 
         this.p1Div.innerHTML = scores[0];
         this.p2Div.innerHTML = scores[1];
+
+        if (scores[0] == this.total_eggs){
+            this.endGame("Player 1 won!!!");
+        }
+        else if (scores[1] == this.total_eggs) {
+            this.endGame("Player 2 won!!!");
+        }
+    }
+
+    endGame(message) {
+        alert(message);
+        this.changeState();
     }
 
     changeState() {
@@ -140,11 +153,14 @@ class MyScene extends CGFscene {
         /* Reset positions */
         for (let i = 0 ; i < this.branches.length; i++) this.branches[i].reset();
         for (let i = 0 ; i < this.eggs.length; i++) this.eggs[i].reset();
+        
+        this.updateGameScore();
     }
 
     checkKeys() {
 
         let first_bird = this.gameMode ? this.birds[1] : this.birds[0];
+        
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {    
             first_bird.accelerate(this.speedFactor)
@@ -159,7 +175,10 @@ class MyScene extends CGFscene {
             first_bird.turn((Math.PI/6) / 3 * this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyR")) {
-            first_bird.reset();
+            if (this.gameMode)
+                this.changeState();
+            else
+                first_bird.reset();
         }
         if (this.gui.isKeyPressed("KeyP")) {
             first_bird.dropBird();
@@ -178,9 +197,6 @@ class MyScene extends CGFscene {
         }
         if (this.gui.isKeyPressed("ArrowLeft")) {
             this.birds[2].turn((Math.PI/6) / 3 * this.speedFactor);
-        }
-        if (this.gui.isKeyPressed("ControlRight")) {
-            this.birds[2].reset();
         }
         if (this.gui.isKeyPressed("ShiftRight")) {
             this.birds[2].dropBird();

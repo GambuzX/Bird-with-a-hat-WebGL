@@ -204,11 +204,9 @@ class MyBird extends CGFobject {
         }
     }
 
-
-    // make eggs elements of scene instead of nests
     grabEgg() {
         for (let i = this.scene.eggs.length-1; i >= 0; i--) {
-            if (this.scene.euclidianDistance(this.position, this.scene.eggs[i].position) <= this.interactionDist*this.scaleFactor) {
+            if (this.scene.eggs[i].birdID != this.birdID && this.scene.euclidianDistance(this.position, this.scene.eggs[i].position) <= this.interactionDist*this.scaleFactor) {
                 this.egg = this.scene.eggs[i];
                 this.scene.removeEgg(i);
                 break;
@@ -227,14 +225,12 @@ class MyBird extends CGFobject {
     }
 
     dropEggInNest() {
-        if (this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
-            if (this.egg) {
-                this.egg.setPosition(this.scene.nests[this.birdID].position);
-                this.scene.addEgg(this.egg);
-                this.egg.setBirdID(this.birdID); //bird owns egg now
-                this.scene.updateGameScore();
-                this.egg = null;
-            }
+        if (this.egg && this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
+            this.egg.setPosition(this.scene.nests[this.birdID].position);
+            this.scene.addEgg(this.egg);
+            this.egg.setBirdID(this.birdID); //bird owns egg now
+            this.scene.updateGameScore();
+            this.egg = null;
         }
     }
 

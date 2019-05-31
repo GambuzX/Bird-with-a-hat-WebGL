@@ -8,7 +8,9 @@ class MyEgg extends CGFobject {
         this.offset = [(Math.random()*2 - 1)*0.5, 0, (Math.random()*2 - 1)*0.5];
         this.initialPosition = [x,y,z];
         this.position = this.initialPosition;
+
         this.birdID = birdID;
+        this.initialBirdID = this.birdID;
 
         this.sphere = new MySphere(scene, 1, 50, 50);
 
@@ -23,6 +25,7 @@ class MyEgg extends CGFobject {
 
     reset() {
         this.position = this.initialPosition;
+        this.birdID = this.initialBirdID;
     }
 
     getBirdID() {
