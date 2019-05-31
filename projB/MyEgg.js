@@ -3,9 +3,9 @@ class MyEgg extends CGFobject {
         super(scene);
 
         this.rotation = Math.PI/6 * Math.random() + Math.PI/6;
-        this.scale = 1 + (Math.random()*0.2 - 0.1);
+        this.scale = 1 + (Math.random()*0.4 - 0.2);
         this.rot_axis = [Math.round(Math.random()), Math.round(Math.random()), Math.round(Math.random())];
-        this.offset = [(Math.random()*2 - 1)*0.5, (Math.random()*2 - 1)*0.5, (Math.random()*2 - 1)*0.5];
+        this.offset = [(Math.random()*2 - 1)*0.5, 0, (Math.random()*2 - 1)*0.5];
         this.initialPosition = [x,y,z];
         this.position = this.initialPosition;
 

@@ -115,6 +115,19 @@ class MyScene extends CGFscene {
 
         /* Reset branches */
         for (let i = 0 ; i < this.branches.length; i++) this.branches[i].reset();
+
+        /* Retrieve grabbed eggs */
+        let egg = this.bird.removeEgg();
+        if (egg) this.addEgg(egg);
+
+        egg = this.bird1.removeEgg();
+        if (egg) this.addEgg(egg);
+
+        egg = this.bird2.removeEgg();
+        if (egg) this.addEgg(egg);
+        
+        /* Reset eggs */
+        for (let i = 0 ; i < this.eggs.length; i++) this.eggs[i].reset();
     }
 
     checkKeys() {
@@ -199,7 +212,7 @@ class MyScene extends CGFscene {
             this.translate( this.eggs[i].position[0] + this.eggs[i].offset[0],  this.eggs[i].position[1] + this.eggs[i].offset[1],  this.eggs[i].position[2] + this.eggs[i].offset[2]);
             this.rotate( this.eggs[i].rotation, this.eggs[i].rot_axis[0], this.eggs[i].rot_axis[1], this.eggs[i].rot_axis[2]);
             this.scale(this.eggs[i].scale, this.eggs[i].scale, this.eggs[i].scale);
-            this.scale(0.5, 0.5, 0.5);      
+            this.scale(0.5, 0.5, 0.5);
             this.eggs[i].display();
             this.popMatrix();
         }

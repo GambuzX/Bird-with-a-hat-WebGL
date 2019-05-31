@@ -59,8 +59,8 @@ class MyBird extends CGFobject {
         this.prevStartTime = 0;
 
         this.branches = [];
-        this.branches_y_offset = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
-        this.branches_z_offset = (this.simplify ?  0 : this.claw_z_offset) * this.scaleFactor;
+        this.grabbed_obj_y = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
+        this.grabbed_obj_z = (this.simplify ?  -this.bodyLength/4 : this.claw_z_offset) * this.scaleFactor;
         this.interactionDist = 1;
 
         this.egg = null;
@@ -148,8 +148,8 @@ class MyBird extends CGFobject {
     update(t, speedFactor) {
         this.wingsRot = (Math.sin((t/500 * speedFactor) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
         
-        this.branches_y_offset = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
-        this.branches_z_offset = (this.simplify ?  0 : this.claw_z_offset) * this.scaleFactor;
+        this.grabbed_obj_y = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
+        this.grabbed_obj_z = (this.simplify ?  -this.bodyLength/4 : this.claw_z_offset) * this.scaleFactor;
 
         switch(this.currentState) {
             /* Normal */
@@ -233,6 +233,12 @@ class MyBird extends CGFobject {
                 this.egg = null;
             }
         }
+    }
+
+    removeEgg() {
+        let egg = this.egg;
+        this.egg = null;
+        return egg;
     }
 
     addBranch(branch) {
@@ -511,11 +517,22 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         for (let i = 0; i < this.branches.length; i++) {
             this.scene.pushMatrix();
-            this.scene.translate(0, this.branches_y_offset, this.branches_z_offset);
+            this.scene.translate(0, this.grabbed_obj_y, this.grabbed_obj_z);
             if (!this.simplify) this.scene.rotate(Math.PI/2, 0, 1, 0);
             this.branches[i].display();
             this.scene.popMatrix();
         }
+        this.scene.popMatrix();
+    }
+
+    display_egg() {
+        if(!this.egg) return;
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, this.grabbed_obj_y, this.grabbed_obj_z);
+        this.scene.rotate( -Math.PI/2, 1, 0, 0);
+        this.scene.scale(this.egg.scale, this.egg.scale, this.egg.scale);
+        this.egg.display();
         this.scene.popMatrix();
     }
 
@@ -531,11 +548,11 @@ class MyBird extends CGFobject {
         this.draw_bird();
         this.scene.popMatrix();
         
-        this.scene.pushMatrix();
         this.display_branches();
-        this.scene.popMatrix();
+        this.display_egg();   
 
-        this.scene.popMatrix();       
+        this.scene.popMatrix();
+         
 
         /* Reset scene appearance */
         this.scene.setDefaultAppearance();
