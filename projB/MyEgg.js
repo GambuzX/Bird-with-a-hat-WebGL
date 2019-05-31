@@ -12,7 +12,7 @@ class MyEgg extends CGFobject {
         this.birdID = birdID;
         this.initialBirdID = this.birdID;
 
-        this.sphere = new MySphere(scene, 1, 50, 50);
+        this.sphere = new MySphere(scene, 1, 10, 10);
 
         this.egg_height = 0.7;
 
