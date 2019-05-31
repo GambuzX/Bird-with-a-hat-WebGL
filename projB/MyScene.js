@@ -69,9 +69,26 @@ class MyScene extends CGFscene {
         this.lightning = new MyLightning(this);
         this.house = new MyHouse(this);
         this.plant = new MyLSPlant(this);
-        this.plant.iterate();
-
-        this.branch = new MyBranch(this);
+        this.plant.generate(
+            "X",
+            {
+                "F": [ "FF" ],
+                "X": [ 
+                    "F[-X][X]F[-X]+X",
+                    "F[-X][X]+X",
+                    "F[+X]-X",
+                    "F[/X][X]F[\\\\X]+X",
+                    "F[\\X][X]/X",
+                    "F[/X]\\X",
+                    "F[^X][X]F[&X]^X",
+                    "F[^X]&X",
+                    "F[&X]^X",
+                ]
+            },
+            30,
+            5,
+            0.6
+        );
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -175,7 +192,7 @@ class MyScene extends CGFscene {
         
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {    
-            first_bird.accelerate(this.speedFactor)
+            first_bird.accelerate(this.speedFactor);
         }
         if (this.gui.isKeyPressed("KeyS")) {
             first_bird.accelerate(-this.speedFactor);
@@ -196,6 +213,12 @@ class MyScene extends CGFscene {
             first_bird.dropBird();
         }
 
+        if (this.gui.isKeyPressed("KeyL")) {
+            if (!this.gameMode) {
+                this.lightning.startAnimation(t);
+            }
+        }
+
         if (!this.gameMode) return;
         
         if (this.gui.isKeyPressed("ArrowUp")) {
@@ -212,9 +235,6 @@ class MyScene extends CGFscene {
         }
         if (this.gui.isKeyPressed("ShiftRight")) {
             this.birds[2].dropBird();
-        }
-        if (this.guiIsKeyPressed("KeyL")) {
-            this.lightning.startAnimation(t);
         }
     }
 
@@ -259,9 +279,6 @@ class MyScene extends CGFscene {
             this.eggs[i].display();
             this.popMatrix();
         }
-        if (this.gui.isKeyPressed("KeyL")) {
-            this.lightning.startAnimation(t);
-        }
     }
 
     display() {
@@ -285,7 +302,7 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.rotate(-0.5*Math.PI, 1, 0, 0);
         this.scale(60, 60, 1);
-        //this.terrain.display();
+        this.terrain.display();
         this.popMatrix();
         
 
@@ -296,49 +313,71 @@ class MyScene extends CGFscene {
 
         if (this.gameMode) {
             /* Birds */
-            //this.birds[1].display();
-            //this.birds[2].display();
+            this.birds[1].display();
+            this.birds[2].display();
 
             /* Nests */
             this.pushMatrix();
             this.translate(this.nests[1].position[0], this.nests[1].position[1], this.nests[1].position[2]);
             this.scale(0.5, 0.5, 0.5);
-            //this.nests[1].display();
+            this.nests[1].display();
             this.popMatrix();
 
             this.pushMatrix();
             this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
             this.scale(0.5, 0.5, 0.5);
-//            this.nests[2].display();
+            this.nests[2].display();
             this.popMatrix();
             
             this.displayEggs();
         }
         else {
-            //this.birds[0].display();
+            this.birds[0].display();
 
             this.pushMatrix();
             this.translate(this.nests[0].position[0], this.nests[0].position[1], this.nests[0].position[2]);
             this.scale(0.5, 0.5, 0.5);
-//            this.nests[0].display();
+            this.nests[0].display();
             this.popMatrix();
 
-            //this.displayBranches();
+            this.displayBranches();
             
+            this.pushMatrix();
+            this.translate(3.2,0,-4.2);
+            this.rotate(-Math.PI/4, 0, 1, 0);
+            this.scale(2,2,2);
+            this.house.display();
+            this.popMatrix();
+
+            this.pushMatrix();
+            this.translate(5,0,4);
+            this.plant.display();
+            this.popMatrix();
+
+            this.pushMatrix();
+            this.translate(-5,0,5);
+            this.plant.display();
+            this.popMatrix();
+
+            this.pushMatrix();
+            this.translate(-8,0,-3);
+            this.plant.display();
+            this.popMatrix();
+
+            this.pushMatrix();
+            this.translate(5,0,-11);
+            this.plant.display();
+            this.popMatrix();
+
+            this.pushMatrix();
+            this.translate(3,10,-4);
+            this.rotate(Math.PI, 0,0,1);
+            this.lightning.display();
+            this.popMatrix();
         }
         this.popMatrix();
         
         /* END draw objects at ground height */        
-
-        this.pushMatrix();
-        this.plant.display();
-        this.popMatrix();
-
-        this.pushMatrix();
-        this.translate(4.6,17.5,-4);
-        this.rotate(Math.PI, 0,0,1);
-        this.lightning.display();
-        this.popMatrix();
 
         // ---- END Primitive drawing section
     }

@@ -2,7 +2,7 @@ class MyLeaf extends CGFobject {
     constructor(scene){
         super(scene);
         this.initBuffers();
-        this.mat = new CGFappearance(scene);
+        this.mat = new CGFappearance(this.scene);
 		this.mat.setDiffuse(0,1,0,1);
 		this.mat.setAmbient(0.3,0.3,0.3,1);
     }
