@@ -59,10 +59,11 @@ class MyBird extends CGFobject {
         this.prevStartTime = 0;
 
         this.branches = [];
-        this.branches_y_offset = this.claw_y_offset-0.5;
-        this.branches_z_offset = this.claw_z_offset;
-        this.catchBranchDist = 1;
-        this.dropNestDist = 1.5;
+        this.branches_y_offset = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
+        this.branches_z_offset = (this.simplify ?  0 : this.claw_z_offset) * this.scaleFactor;
+        this.interactionDist = 1;
+
+        this.egg = null;
     }
 
     initMaterials() {
@@ -146,6 +147,9 @@ class MyBird extends CGFobject {
 
     update(t, speedFactor) {
         this.wingsRot = (Math.sin((t/500 * speedFactor) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
+        
+        this.branches_y_offset = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
+        this.branches_z_offset = (this.simplify ?  0 : this.claw_z_offset) * this.scaleFactor;
 
         switch(this.currentState) {
             /* Normal */
@@ -170,11 +174,18 @@ class MyBird extends CGFobject {
 
                 /* Grounded */
                 if (Math.abs(this.birdHeight + this.dropShift) <= this.groundedLimit) {
-                    /* Only allow on branch at a time */
-                    if (this.branches.length == 0) 
-                        this.grabNearBranches();
 
-                    this.dropBranchesInNest();
+                    if (this.scene.isGameMode()) {
+                        if (!this.egg)
+                            this.grabEgg();
+                        this.dropEggInNest();
+                    }
+                    else {
+                        /* Only allow on branch at a time */
+                        if (this.branches.length == 0) 
+                            this.grabNearBranches();
+                        this.dropBranchesInNest();
+                    }
                 }
                 break;
         }
@@ -184,7 +195,7 @@ class MyBird extends CGFobject {
 
     grabNearBranches() {
         for (let i = this.scene.branches.length-1; i >= 0; i--) {
-            if (this.scene.euclidianDistance(this.position, this.scene.branches[i].position) <= this.catchBranchDist*this.scaleFactor) {
+            if (this.scene.euclidianDistance(this.position, this.scene.branches[i].position) <= this.interactionDist*this.scaleFactor) {
                 this.addBranch(this.scene.branches[i]);
                 this.scene.removeBranch(i);
                 break;
@@ -192,12 +203,34 @@ class MyBird extends CGFobject {
         }
     }
 
+
+    // make eggs elements of scene instead of nests
+    grabEgg() {
+        for (let i = this.scene.eggs.length-1; i >= 0; i--) {
+            if (this.scene.euclidianDistance(this.position, this.scene.eggs[i].position) <= this.interactionDist*this.scaleFactor) {
+                this.egg = this.scene.eggs[i];
+                this.scene.removeEgg(i);
+                break;
+            }
+        }
+    }
+
     dropBranchesInNest() {
-        if (this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.dropNestDist*this.scaleFactor) {
+        if (this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
             for (let i = this.branches.length-1; i >= 0; i--) {
                 this.branches[i].position = this.scene.nests[this.birdID].position;
                 this.scene.addBranch(this.branches[i]);
                 this.removeBranch(i);
+            }
+        }
+    }
+
+    dropEggInNest() {
+        if (this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
+            if (this.egg) {
+                this.egg.setPosition(this.scene.nests[this.birdID].position);
+                this.scene.addEgg(this.egg);
+                this.egg = null;
             }
         }
     }
@@ -478,12 +511,8 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         for (let i = 0; i < this.branches.length; i++) {
             this.scene.pushMatrix();
-            if (this.simplify)  {
-                this.scene.translate(0, -this.bodyRadius*this.scaleFactor, 0);
-            } else {
-                this.scene.translate(0, this.branches_y_offset*this.scaleFactor, this.branches_z_offset*this.scaleFactor);
-                this.scene.rotate(Math.PI/2, 0, 1, 0);
-            }
+            this.scene.translate(0, this.branches_y_offset, this.branches_z_offset);
+            if (!this.simplify) this.scene.rotate(Math.PI/2, 0, 1, 0);
             this.branches[i].display();
             this.scene.popMatrix();
         }

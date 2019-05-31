@@ -2,8 +2,12 @@ class MyEgg extends CGFobject {
     constructor(scene, x, y, z, rot) {
         super(scene);
 
-        this.rotation = rot;
-        this.position = [x,y,z];
+        this.rotation = Math.PI/6 * Math.random() + Math.PI/6;
+        this.scale = 1 + (Math.random()*0.2 - 0.1);
+        this.rot_axis = [Math.round(Math.random()), Math.round(Math.random()), Math.round(Math.random())];
+        this.offset = [(Math.random()*2 - 1)*0.5, (Math.random()*2 - 1)*0.5, (Math.random()*2 - 1)*0.5];
+        this.initialPosition = [x,y,z];
+        this.position = this.initialPosition;
 
         this.sphere = new MySphere(scene, 1, 50, 50);
 
@@ -14,6 +18,14 @@ class MyEgg extends CGFobject {
         this.eggMat.setDiffuse(1, 1, 1, 1);
         this.eggMat.loadTexture('images/egg.jpg');
         this.eggMat.setTextureWrap('REPEAT', 'REPEAT');
+    }
+
+    reset() {
+        this.position = this.initialPosition;
+    }
+
+    setPosition(pos) {
+        this.position = pos;
     }
 
     display() {

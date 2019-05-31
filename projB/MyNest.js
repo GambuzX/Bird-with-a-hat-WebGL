@@ -6,11 +6,6 @@ class MyNest extends CGFobject {
 
         this.circle = new MyCircle(scene, 8);
         this.branch = new MyTreeBranch(scene, 0, 0, 0, 0, 2, 0.2);
-        this.eggs = [ 
-            new MyEgg(scene, x-Math.random()*0.6, y, z-Math.random()*0.6, Math.PI/6 * Math.random() + Math.PI/6),
-            new MyEgg(scene, x+Math.random()*0.6, y, 0, Math.PI/6 * Math.random() + Math.PI/6),
-            new MyEgg(scene, x-Math.random()*0.6, y, z+Math.random()*0.6, Math.PI/6 * Math.random() + Math.PI/6)
-        ]
         this.position = [x, y, z];
 
         this.ang_inc = Math.PI/48;
@@ -56,30 +51,5 @@ class MyNest extends CGFobject {
         this.leavesMat.apply();
         this.circle.display();
         this.scene.popMatrix();
-    }
-
-    displayEggs() {
-
-        this.scene.pushMatrix();
-        this.scene.translate(this.eggs[0].position[0], this.eggs[0].position[1], this.eggs[0].position[2]);
-        this.scene.rotate(this.eggs[0].rotation, -1, 0, 1);
-        this.scene.scale(0.4, 0.4, 0.4);
-        this.eggs[0].display();
-        this.scene.popMatrix();
-
-        this.scene.pushMatrix();
-        this.scene.translate(this.eggs[1].position[0], this.eggs[1].position[1], this.eggs[1].position[2]);
-        this.scene.rotate(this.eggs[1].rotation, 0, 0, -1);
-        this.scene.scale(0.5, 0.5, 0.5);
-        this.eggs[1].display();
-        this.scene.popMatrix();
-
-        this.scene.pushMatrix();
-        this.scene.translate(this.eggs[2].position[0], this.eggs[2].position[1], this.eggs[2].position[2]);
-        this.scene.rotate(this.eggs[2].rotation, 1, 0, 1);
-        this.scene.scale(0.55, 0.55, 0.55);
-        this.eggs[2].display();
-        this.scene.popMatrix();
-
     }
 }

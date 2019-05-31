@@ -26,7 +26,7 @@ class MyScene extends CGFscene {
         this.p2_pos = [5, 0, 0];
         this.p1_id = 1;
         this.p2_id = 2;
-        this.minigame = false;
+        this.gameMode = false;
 
         // Initialize scene objects
         this.axis = new CGFaxis(this);
@@ -45,6 +45,16 @@ class MyScene extends CGFscene {
             new MyNest(this, 0, 0, 0, 0),
             new MyNest(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
             new MyNest(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
+        ];
+
+        this.eggs = [
+            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2]),
+            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2]),
+            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2]),
+            
+            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2]),
+            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2]),
+            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2])
         ];
 
         // Objects connected to MyInterface
@@ -67,7 +77,7 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
-        if (this.minigame) {
+        if (this.gameMode) {
             this.bird1.update(t, this.speedFactor);
             this.bird2.update(t, this.speedFactor);
         }
@@ -81,6 +91,10 @@ class MyScene extends CGFscene {
         this.bird.setScaleFactor(this.scaleFactor);
         this.bird1.setScaleFactor(this.scaleFactor);
         this.bird2.setScaleFactor(this.scaleFactor);
+    }
+
+    isGameMode() {
+        return this.gameMode;
     }
 
     changeState() {
@@ -105,7 +119,7 @@ class MyScene extends CGFscene {
 
     checkKeys() {
 
-        let first_bird = this.minigame ? this.bird1 : this.bird;
+        let first_bird = this.gameMode ? this.bird1 : this.bird;
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {    
             first_bird.accelerate(this.speedFactor)
@@ -126,7 +140,7 @@ class MyScene extends CGFscene {
             first_bird.dropBird();
         }
 
-        if (!this.minigame) return;
+        if (!this.gameMode) return;
         
         if (this.gui.isKeyPressed("ArrowUp")) {
             this.bird2.accelerate(this.speedFactor)
@@ -160,6 +174,37 @@ class MyScene extends CGFscene {
         this.branches.splice(i,1);
     }
 
+    addEgg(egg) {
+        this.eggs.push(egg);
+    }
+
+    removeEgg(i) {
+        this.eggs.splice(i,1);
+    }
+
+    displayBranches() {
+        for (let i = 0 ; i < this.branches.length; i++) {        
+            this.pushMatrix();
+            this.translate( this.branches[i].position[0],  this.branches[i].position[1],  this.branches[i].position[2]);
+            this.rotate( this.branches[i].rotation, 0, 1, 0);  
+            this.scale(0.5, 0.5, 0.5);      
+            this.branches[i].display();
+            this.popMatrix();
+        }
+    }
+
+    displayEggs() {
+        for (let i = 0 ; i < this.eggs.length; i++) {        
+            this.pushMatrix();
+            this.translate( this.eggs[i].position[0] + this.eggs[i].offset[0],  this.eggs[i].position[1] + this.eggs[i].offset[1],  this.eggs[i].position[2] + this.eggs[i].offset[2]);
+            this.rotate( this.eggs[i].rotation, this.eggs[i].rot_axis[0], this.eggs[i].rot_axis[1], this.eggs[i].rot_axis[2]);
+            this.scale(this.eggs[i].scale, this.eggs[i].scale, this.eggs[i].scale);
+            this.scale(0.5, 0.5, 0.5);      
+            this.eggs[i].display();
+            this.popMatrix();
+        }
+    }
+
     display() {
         // ---- BEGIN Background, camera and axis setup
         // Clear image and depth buffer everytime we update the scene
@@ -189,7 +234,7 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.translate(0, ground_height, 0);
 
-        if (this.minigame) {
+        if (this.gameMode) {
             /* Birds */
             this.bird1.display();
             this.bird2.display();
@@ -200,14 +245,14 @@ class MyScene extends CGFscene {
             this.scale(0.5, 0.5, 0.5);
             this.nests[1].display();
             this.popMatrix();
-            this.nests[1].displayEggs();
 
             this.pushMatrix();
             this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
             this.scale(0.5, 0.5, 0.5);
             this.nests[2].display();
             this.popMatrix();
-            this.nests[2].displayEggs();
+            
+            this.displayEggs();
         }
         else {
             this.bird.display();
@@ -217,18 +262,12 @@ class MyScene extends CGFscene {
             this.scale(0.5, 0.5, 0.5);
             this.nests[0].display();
             this.popMatrix();
-            this.nests[0].displayEggs();
+
+            this.displayBranches();
+            
         }
 
-        /* Draw branches */
-        for (let i = 0 ; i < this.branches.length; i++) {        
-            this.pushMatrix();
-            this.translate( this.branches[i].position[0],  this.branches[i].position[1],  this.branches[i].position[2]);
-            this.rotate( this.branches[i].rotation, 0, 1, 0);  
-            this.scale(0.5, 0.5, 0.5);      
-            this.branches[i].display();
-            this.popMatrix();
-        }
+        
         /* END draw objects at ground height */        
 
         this.popMatrix();
