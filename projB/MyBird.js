@@ -231,6 +231,8 @@ class MyBird extends CGFobject {
             if (this.egg) {
                 this.egg.setPosition(this.scene.nests[this.birdID].position);
                 this.scene.addEgg(this.egg);
+                this.egg.setBirdID(this.birdID); //bird owns egg now
+                this.scene.updateGameScore();
                 this.egg = null;
             }
         }

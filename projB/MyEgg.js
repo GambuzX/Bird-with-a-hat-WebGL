@@ -1,5 +1,5 @@
 class MyEgg extends CGFobject {
-    constructor(scene, x, y, z, rot) {
+    constructor(scene, x, y, z, birdID) {
         super(scene);
 
         this.rotation = Math.PI/6 * Math.random() + Math.PI/6;
@@ -8,6 +8,7 @@ class MyEgg extends CGFobject {
         this.offset = [(Math.random()*2 - 1)*0.5, 0, (Math.random()*2 - 1)*0.5];
         this.initialPosition = [x,y,z];
         this.position = this.initialPosition;
+        this.birdID = birdID;
 
         this.sphere = new MySphere(scene, 1, 50, 50);
 
@@ -22,6 +23,14 @@ class MyEgg extends CGFobject {
 
     reset() {
         this.position = this.initialPosition;
+    }
+
+    getBirdID() {
+        return this.birdID;
+    }
+
+    setBirdID(birdID) {
+        this.birdID = birdID;
     }
 
     setPosition(pos) {

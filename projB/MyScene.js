@@ -21,22 +21,27 @@ class MyScene extends CGFscene {
         this.enableTextures(true);
         this.setUpdatePeriod(50);
 
-        // Minigame
+        // Minigame variables
         this.p1_pos = [-10, 0, 0];
         this.p2_pos = [5, 0, 0];
         this.p1_id = 1;
         this.p2_id = 2;
         this.gameMode = false;
 
+        // Minigame interface
+		this.minigameDiv = document.getElementById("minigame");
+		this.p1Div = document.getElementById("player1_score");
+		this.p2Div = document.getElementById("player2_score");
+
         // Initialize scene objects
         this.axis = new CGFaxis(this);
+        this.terrain = new MyTerrain(this);        
 
         this.birds = [
             new MyBird(this, 0, false),
             new MyBird(this, this.p1_id, true, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], Math.PI/2, false),
             new MyBird(this, this.p2_id, true, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], -Math.PI/2, true)
         ];
-        this.terrain = new MyTerrain(this);        
         this.branches = [
             new MyTreeBranch(this, -8, 0, 6, 0, 3, 0.3), 
             new MyTreeBranch(this, 5, 0, 8, Math.PI/3, 3, 0.3), 
@@ -51,18 +56,20 @@ class MyScene extends CGFscene {
         ];
 
         this.eggs = [
-            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2]),
-            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2]),
-            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2]),
+            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
+            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
+            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
             
-            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2]),
-            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2]),
-            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2])
+            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id),
+            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id),
+            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
         ];
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
         this.scaleFactor = 1;
+
+        this.updateGameScore();
     }
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
@@ -99,7 +106,21 @@ class MyScene extends CGFscene {
         return this.gameMode;
     }
 
+    updateGameScore() {
+        let scores = [0, 0];
+        for (let i = 0; i < this.eggs.length; i++)
+            scores[this.eggs[i].getBirdID()-1] += 1;
+
+        this.p1Div.innerHTML = scores[0];
+        this.p2Div.innerHTML = scores[1];
+    }
+
     changeState() {
+
+        if(this.gameMode)
+            this.minigameDiv.style.display = "block";
+        else
+            this.minigameDiv.style.display = "none";
 
         for (let i = 0; i < this.birds.length; i++) {
             /* Reset position */
