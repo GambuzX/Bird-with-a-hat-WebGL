@@ -2,7 +2,7 @@ class MyBirdHat extends CGFobject {
     constructor(scene) {
         super(scene);
 
-        this.halfSphere = new MyHalfSphere(scene, 1, 50, 50);
+        this.halfSphere = new MyHalfSphere(scene, 1, 10, 10);
         this.cylinder = new MyCylinder(scene, 10);
         
         this.stripe_height = 0.2;

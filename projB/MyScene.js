@@ -37,8 +37,11 @@ class MyScene extends CGFscene {
         this.axis = new CGFaxis(this);
         this.terrain = new MyTerrain(this);        
 
+        this.main_bird_id = 0;
+        this.main_nest_pos = [0, 0, 0];
+
         this.birds = [
-            new MyBird(this, 0, false),
+            new MyBird(this, this.main_bird_id, false, this.main_nest_pos[0], this.main_nest_pos[1], this.main_nest_pos[2], false),
             new MyBird(this, this.p1_id, true, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], Math.PI/2, false),
             new MyBird(this, this.p2_id, true, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], -Math.PI/2, true)
         ];
@@ -48,23 +51,21 @@ class MyScene extends CGFscene {
             new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3, 3, 0.3), 
             new MyTreeBranch(this, -15, 0, -7, Math.PI/2, 3, 0.3)
         ];
-
         this.nests = [
-            new MyNest(this, 0, 0, 0, 0),
-            new MyNest(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
-            new MyNest(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
+            new MyNest(this, 60, this.main_nest_pos[0], this.main_nest_pos[1], this.main_nest_pos[2], this.main_bird_id),
+            new MyNest(this, 30, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
+            new MyNest(this, 30, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
         ];
 
-        this.eggs = [
-            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
-            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
-            new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
-            
-            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id),
-            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id),
-            new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
-        ];
-        this.total_eggs = this.eggs.length;
+        this.eggs = [];
+        let eggs_per_nest = 3;
+
+        for (let i = 0; i < eggs_per_nest; i++) {
+            this.eggs.push(new MyEgg(this, this.main_nest_pos[0], this.main_nest_pos[1], this.main_nest_pos[2], this.main_bird_id));
+            this.eggs.push(new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id));
+            this.eggs.push(new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id));
+        }
+        this.total_game_eggs = this.eggs.length - eggs_per_nest;
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -108,17 +109,18 @@ class MyScene extends CGFscene {
     }
 
     updateGameScore() {
-        let scores = [0, 0];
-        for (let i = 0; i < this.total_eggs; i++)
-            scores[this.eggs[i].getBirdID()-1] += 1;
+        let scores = [0, 0, 0];
+        for (let i = 0; i < this.eggs.length; i++) {
+            scores[this.eggs[i].getBirdID()] += 1;
+        }
 
-        this.p1Div.innerHTML = scores[0];
-        this.p2Div.innerHTML = scores[1];
+        this.p1Div.innerHTML = scores[1];
+        this.p2Div.innerHTML = scores[2];
 
-        if (scores[0] == this.total_eggs){
+        if (scores[1] == this.total_game_eggs){
             this.endGame("Player 1 won!!!");
         }
-        else if (scores[1] == this.total_eggs) {
+        else if (scores[2] == this.total_game_eggs) {
             this.endGame("Player 2 won!!!");
         }
     }
@@ -141,13 +143,12 @@ class MyScene extends CGFscene {
 
             /* Retrieve branches */
             let branches = this.birds[i].removeBranches();
-            for (let i = 0 ; i < branches.length; i++) 
-                this.addBranch(branches[i]);
+            for (let j = 0 ; j < branches.length; j++) 
+                this.addBranch(branches[j]);
 
             /* Retrieve egg */
             let egg = this.birds[i].removeEgg();
-            if (egg) 
-                this.addEgg(egg);
+            if (egg) this.addEgg(egg);
         }
 
         /* Reset positions */
@@ -235,7 +236,10 @@ class MyScene extends CGFscene {
     }
 
     displayEggs() {
-        for (let i = 0 ; i < this.eggs.length; i++) {        
+        for (let i = 0 ; i < this.eggs.length; i++) {
+            if (this.gameMode && this.eggs[i].birdID == this.main_bird_id) continue;
+            if (!this.gameMode && this.eggs[i].birdID != this.main_bird_id) continue;
+                   
             this.pushMatrix();
             this.translate( this.eggs[i].position[0] + this.eggs[i].offset[0],  this.eggs[i].position[1] + this.eggs[i].offset[1],  this.eggs[i].position[2] + this.eggs[i].offset[2]);
             this.rotate( this.eggs[i].rotation, this.eggs[i].rot_axis[0], this.eggs[i].rot_axis[1], this.eggs[i].rot_axis[2]);
@@ -292,8 +296,6 @@ class MyScene extends CGFscene {
             this.scale(0.5, 0.5, 0.5);
             this.nests[2].display();
             this.popMatrix();
-            
-            this.displayEggs();
         }
         else {
             this.birds[0].display();
@@ -304,9 +306,10 @@ class MyScene extends CGFscene {
             this.nests[0].display();
             this.popMatrix();
 
-            this.displayBranches();
-            
+            this.displayBranches();            
         }
+            
+        this.displayEggs();
 
         
         /* END draw objects at ground height */        

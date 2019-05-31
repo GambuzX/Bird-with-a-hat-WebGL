@@ -1,5 +1,5 @@
 class MyNest extends CGFobject {
-    constructor(scene, x, y, z, birdID) {
+    constructor(scene, branches, x, y, z, birdID) {
         super(scene);
 
         this.birdID = birdID;
@@ -8,7 +8,7 @@ class MyNest extends CGFobject {
         this.branch = new MyTreeBranch(scene, 0, 0, 0, 0, 2, 0.2);
         this.position = [x, y, z];
 
-        this.ang_inc = Math.PI/48;
+        this.ang_inc = 2*Math.PI/branches;
         this.randomizeValues();
 
         this.leavesMat = new CGFappearance(this.scene);
@@ -24,7 +24,7 @@ class MyNest extends CGFobject {
 
         for (let i = 0; i < 2*Math.PI/this.ang_inc; i++) {
             this.rand_rotations.push(Math.random());
-            this.rand_sizes.push(Math.random());
+            this.rand_sizes.push(Math.random()*0.4 + 0.6);
         }
     }
 

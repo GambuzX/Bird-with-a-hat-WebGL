@@ -22,13 +22,13 @@ class MyBird extends CGFobject {
         this.pyramid = new MyPyramid(this.scene, 4, 1);
         this.quad = new MyQuad(this.scene);
         this.cylinder = new MyCylinder(this.scene, 5);
-        this.circle = new MyCircle(this.scene, 20);
+        this.circle = new MyCircle(this.scene, 10);
         this.birdClaw = new MyBirdClaw(this.scene);
         this.birdWing = new MyBirdWing(this.scene);
         this.birdTail = new MyBirdTail(this.scene);
         this.birdHat = new MyBirdHat(this.scene);
         this.plane = new Plane(this.scene, 10);
-        this.halfSphere = new MyHalfSphere(this.scene, 1, 50, 5);
+        this.halfSphere = new MyHalfSphere(this.scene, 1, 20, 5);
     }
 
     initShaders() {
@@ -206,7 +206,9 @@ class MyBird extends CGFobject {
 
     grabEgg() {
         for (let i = this.scene.eggs.length-1; i >= 0; i--) {
-            if (this.scene.eggs[i].birdID != this.birdID && this.scene.euclidianDistance(this.position, this.scene.eggs[i].position) <= this.interactionDist*this.scaleFactor) {
+            let canPickup = this.scene.eggs[i].birdID != this.birdID && this.scene.eggs[i].birdID != this.scene.main_bird_id;
+            let inRange = this.scene.euclidianDistance(this.position, this.scene.eggs[i].position) <= this.interactionDist*this.scaleFactor;
+            if (canPickup && inRange) {
                 this.egg = this.scene.eggs[i];
                 this.scene.removeEgg(i);
                 break;
@@ -226,11 +228,11 @@ class MyBird extends CGFobject {
 
     dropEggInNest() {
         if (this.egg && this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
-            this.egg.setPosition(this.scene.nests[this.birdID].position);
-            this.scene.addEgg(this.egg);
-            this.egg.setBirdID(this.birdID); //bird owns egg now
+            let egg = this.removeEgg();
+            egg.setPosition(this.scene.nests[this.birdID].position);
+            egg.setBirdID(this.birdID); //bird owns egg now
+            this.scene.addEgg(egg);
             this.scene.updateGameScore();
-            this.egg = null;
         }
     }
 
