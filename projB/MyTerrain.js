@@ -27,7 +27,7 @@ class MyTerrain extends CGFobject {
         this.appearance.setTexture(this.texture);
         this.appearance.setTextureWrap('REPEAT', 'REPEAT');
 
-        this.planeObject = new Plane(this.scene, 128);
+        this.planeObject = new Plane(this.scene, 60);
     }
 
     display() {

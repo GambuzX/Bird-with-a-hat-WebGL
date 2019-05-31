@@ -15,7 +15,7 @@ class LightningSegment extends CGFobject {
         this.mat.apply();
 
         this.scene.pushMatrix();
-        this.scene.scale(0.25, 2, 1);
+        this.scene.scale(0.1, 2, 1);
         this.scene.translate(0,0.5,0);
         this.model.display();
         this.scene.popMatrix();

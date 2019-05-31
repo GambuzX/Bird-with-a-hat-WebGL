@@ -21,12 +21,19 @@ class MyScene extends CGFscene {
         this.enableTextures(true);
         this.setUpdatePeriod(50);
 
+        this.ambientLight = 1;
+
         // Initialize scene objects
         this.axis = new CGFaxis(this);
         //this.bird = new MyBird(this);
         this.terrain = new MyTerrain(this);
 
         this.lightning = new MyLightning(this);
+        this.house = new MyHouse(this);
+        this.plant = new MyLSPlant(this);
+        this.plant.iterate();
+
+        this.branch = new MyBranch(this);
 
         // Objects connected to MyInterface
         this.speedFactor = 1;
@@ -99,7 +106,7 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.rotate(-0.5*Math.PI, 1, 0, 0);
         this.scale(60, 60, 1);
-        this.terrain.display();
+        //this.terrain.display();
         this.popMatrix();
         
 
@@ -109,10 +116,23 @@ class MyScene extends CGFscene {
         this.popMatrix();
 
         this.pushMatrix();
-        this.translate(0,15,0);
+        this.translate(3,2.4,-4);
+        this.rotate(-Math.PI/3, 0, 1, 0);
+        this.scale(2,2,2);
+        //this.house.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(0,2.4,0);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(4.6,17.5,-4);
         this.rotate(Math.PI, 0,0,1);
         this.lightning.display();
         this.popMatrix();
+
         // ---- END Primitive drawing section
     }
 }

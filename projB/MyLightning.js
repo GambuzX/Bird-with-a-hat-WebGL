@@ -4,7 +4,11 @@ class MyLightning extends MyLSystem {
         this.axiom = "X";
         this.productions = {
             "F":["FF"],
-            "X":["F[-X][X]F[-X]+FX"]
+            "X":[
+                "F[-X][X]F[-X]+FX", 
+                "F[-X][X]+X",
+                "F[+X]-X",
+            ]
         };
         this.angle = 25;
         this.iterations = 3;
@@ -38,7 +42,7 @@ class MyLightning extends MyLSystem {
     }
 
     display(){
-        this.scene.setGlobalAmbientLight(1,1,1,1);
+        this.scene.setGlobalAmbientLight(1, 1, 1, 1);
         this.scene.pushMatrix();
         this.scene.scale(this.scale, this.scale, this.scale);
 
