@@ -1,8 +1,14 @@
 class MyBird extends CGFobject {
 
-    constructor(scene) {
+    constructor(scene, ID, simplify, x, y, z, ori, alt) {
         super(scene);
         
+        this.birdID = ID;
+        this.simplify = simplify;
+        this.initialPosition = [x || 0, y || 0, z || 0];
+        this.initialOri = ori || 0;
+        this.alt_color = alt || false;
+
         this.initObjects();
         this.initShaders();
         this.initBodyVariables();
@@ -40,10 +46,10 @@ class MyBird extends CGFobject {
         /* Bird own animation */
         this.animShift = 0;
         this.wingsRot = 0;
-        this.orientation = 0;
+        this.orientation = this.initialOri;
         this.speed = 0;
-        this.position = [0, 0, 0];
         this.scaleFactor = 1;
+        this.position = this.initialPosition;
         
         /* Dropping state variables */
         this.currentState = 0;
@@ -54,10 +60,11 @@ class MyBird extends CGFobject {
         this.prevStartTime = 0;
 
         this.branches = [];
-        this.branches_y_offset = this.claw_y_offset-0.5;
-        this.branches_z_offset = this.claw_z_offset;
-        this.catchBranchDist = 1;
-        this.dropNestDist = 1.5;
+        this.grabbed_obj_y = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
+        this.grabbed_obj_z = (this.simplify ?  -this.bodyLength/4 : this.claw_z_offset) * this.scaleFactor;
+        this.interactionDist = 1;
+
+        this.egg = null;
     }
 
     initMaterials() {
@@ -86,7 +93,7 @@ class MyBird extends CGFobject {
         this.feathersMat = new CGFappearance(this.scene);
         this.feathersMat.setAmbient(1, 1, 1, 1);
         this.feathersMat.setDiffuse(1, 1, 1, 1);
-        this.feathersMat.loadTexture('images/bird/purple_fur.jpg');
+        this.feathersMat.loadTexture(this.alt_color ? 'images/bird/red_fur.jpg' : 'images/bird/purple_fur.jpg');
         this.feathersMat.setTextureWrap('REPEAT', 'REPEAT');
 
         this.legMat = new CGFappearance(this.scene);
@@ -141,6 +148,9 @@ class MyBird extends CGFobject {
 
     update(t, speedFactor) {
         this.wingsRot = (Math.sin((t/500 * speedFactor) * 2 * Math.PI) + 1) / 2 * Math.PI/2; // angle between 0 and 90
+        
+        this.grabbed_obj_y = (this.simplify ? -this.bodyRadius : this.claw_y_offset-0.5) * this.scaleFactor;
+        this.grabbed_obj_z = (this.simplify ?  -this.bodyLength/4 : this.claw_z_offset) * this.scaleFactor;
 
         switch(this.currentState) {
             /* Normal */
@@ -165,11 +175,18 @@ class MyBird extends CGFobject {
 
                 /* Grounded */
                 if (Math.abs(this.birdHeight + this.dropShift) <= this.groundedLimit) {
-                    /* Only allow on branch at a time */
-                    if (this.branches.length == 0) 
-                        this.grabNearBranches();
 
-                    this.dropBranchesInNest();
+                    if (this.scene.isGameMode()) {
+                        if (!this.egg)
+                            this.grabEgg();
+                        this.dropEggInNest();
+                    }
+                    else {
+                        /* Only allow on branch at a time */
+                        if (this.branches.length == 0) 
+                            this.grabNearBranches();
+                        this.dropBranchesInNest();
+                    }
                 }
                 break;
         }
@@ -179,21 +196,48 @@ class MyBird extends CGFobject {
 
     grabNearBranches() {
         for (let i = this.scene.branches.length-1; i >= 0; i--) {
-            if (this.scene.euclidianDistance(this.position, this.scene.branches[i].position) <= this.catchBranchDist*this.scaleFactor) {
+            if (this.scene.euclidianDistance(this.position, this.scene.branches[i].position) <= this.interactionDist*this.scaleFactor) {
                 this.addBranch(this.scene.branches[i]);
                 this.scene.removeBranch(i);
+                break;
+            }
+        }
+    }
+
+    grabEgg() {
+        for (let i = this.scene.eggs.length-1; i >= 0; i--) {
+            if (this.scene.eggs[i].birdID != this.birdID && this.scene.euclidianDistance(this.position, this.scene.eggs[i].position) <= this.interactionDist*this.scaleFactor) {
+                this.egg = this.scene.eggs[i];
+                this.scene.removeEgg(i);
+                break;
             }
         }
     }
 
     dropBranchesInNest() {
-        if (this.scene.euclidianDistance(this.position, this.scene.nest.position) < this.dropNestDist*this.scaleFactor) {
+        if (this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
             for (let i = this.branches.length-1; i >= 0; i--) {
-                this.branches[i].position = this.scene.nest.position;
+                this.branches[i].position = this.scene.nests[this.birdID].position;
                 this.scene.addBranch(this.branches[i]);
                 this.removeBranch(i);
             }
         }
+    }
+
+    dropEggInNest() {
+        if (this.egg && this.scene.euclidianDistance(this.position, this.scene.nests[this.birdID].position) < this.interactionDist*this.scaleFactor) {
+            this.egg.setPosition(this.scene.nests[this.birdID].position);
+            this.scene.addEgg(this.egg);
+            this.egg.setBirdID(this.birdID); //bird owns egg now
+            this.scene.updateGameScore();
+            this.egg = null;
+        }
+    }
+
+    removeEgg() {
+        let egg = this.egg;
+        this.egg = null;
+        return egg;
     }
 
     addBranch(branch) {
@@ -202,6 +246,16 @@ class MyBird extends CGFobject {
 
     removeBranch(i) {
         this.branches.splice(i, 1);
+    }
+
+    removeBranches() {
+        let branches = this.branches;
+        this.branches = [];
+        return branches;
+    }
+
+    setScaleFactor(scale) {
+        this.scaleFactor = scale;
     }
 
     updatePosition() {
@@ -235,24 +289,31 @@ class MyBird extends CGFobject {
 
     reset() {
         this.speed = 0;
-        this.orientation = 0;
-        this.position = [0,0,0];
+        this.orientation = this.initialOri;
+        this.position = this.initialPosition;
     }
 
     draw_bird() {
         this.scene.pushMatrix();
         this.scene.translate(0, this.headHeight + this.bodyRadius, 0);
         this.draw_head();
-        this.draw_brows();
         this.draw_eyes();
         this.draw_beak();
-        this.draw_hat();
+        if(!this.simplify)  {
+            this.draw_brows();
+            this.draw_eye_sockets();
+            this.draw_hat();
+        }
         this.scene.popMatrix();
 
         this.draw_body();
         this.draw_wings();
-        this.draw_tail();
-        this.draw_claws();
+        if(!this.simplify)  {
+            this.draw_chest();
+            this.draw_tail();
+            this.draw_butt();
+            this.draw_claws();
+        }
     }
 
     draw_head() {
@@ -265,7 +326,6 @@ class MyBird extends CGFobject {
     }
     
     draw_body() {
-        /* Body */
         this.scene.pushMatrix();
         this.scene.scale(this.bodyRadius, this.bodyRadius, this.bodyLength);
         this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
@@ -273,8 +333,10 @@ class MyBird extends CGFobject {
         this.feathersMat.apply();
         this.cylinder.display();
         this.scene.popMatrix();
+    }
 
-        /* Set chest shader hader */
+    draw_chest() {
+        /* Set chest shader */
         this.scene.setActiveShader(this.chestShader);
         this.chestTexture.bind(0);
         this.heightMap.bind(1);
@@ -332,26 +394,6 @@ class MyBird extends CGFobject {
     }
 
     draw_eyes() {
-
-        /* Left Eye Socket*/
-        this.scene.pushMatrix();
-        this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
-        this.scene.rotate( this.eye_rotation, 0, 1, 0);
-        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
-        this.scene.rotate(Math.PI/2, 1, 0, 0);
-        this.whiteMat.apply();
-        this.circle.display();
-        this.scene.popMatrix();
-
-        /* Right Eye Socket*/
-        this.scene.pushMatrix();
-        this.scene.translate(-this.eye_x_offset, this.eye_y_offset, this.face_shift);
-        this.scene.rotate( -this.eye_rotation, 0, 1, 0);
-        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
-        this.scene.rotate(Math.PI/2, 1, 0, 0);
-        this.circle.display();
-        this.scene.popMatrix();
-
         /* Left Eye */
         this.scene.pushMatrix();
         this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
@@ -374,6 +416,27 @@ class MyBird extends CGFobject {
         this.scene.popMatrix();
     }
 
+    draw_eye_sockets() {
+        /* Left Eye Socket*/
+        this.scene.pushMatrix();
+        this.scene.translate(this.eye_x_offset, this.eye_y_offset, this.face_shift);
+        this.scene.rotate( this.eye_rotation, 0, 1, 0);
+        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
+        this.whiteMat.apply();
+        this.circle.display();
+        this.scene.popMatrix();
+
+        /* Right Eye Socket*/
+        this.scene.pushMatrix();
+        this.scene.translate(-this.eye_x_offset, this.eye_y_offset, this.face_shift);
+        this.scene.rotate( -this.eye_rotation, 0, 1, 0);
+        this.scene.scale(this.eye_socket_size, this.eye_socket_size, this.eye_socket_size);
+        this.scene.rotate(Math.PI/2, 1, 0, 0);
+        this.circle.display();
+        this.scene.popMatrix();
+    }
+
     draw_beak() {
         this.scene.pushMatrix();
         this.scene.translate(0, this.beak_y_offset, this.face_shift);
@@ -386,18 +449,20 @@ class MyBird extends CGFobject {
 
     draw_tail() {
         this.scene.pushMatrix();
+        this.scene.translate(0, 0, -this.bodyLength-this.butt_length+0.1);
+        this.feathersMat.apply();
+        this.birdTail.display();
+        this.scene.popMatrix();
+    }
+
+    draw_butt() {
+        this.scene.pushMatrix();
         this.scene.translate(0, 0, -this.bodyLength);
         this.scene.scale(this.bodyRadius, this.bodyRadius, this.butt_length);
         this.scene.rotate(this.cyl_rot_fix, 0, 0, 1);
         this.scene.rotate(Math.PI/2, -1, 0, 0);
         this.feathersMat.apply();
         this.halfSphere.display();
-        this.scene.popMatrix();
-
-        this.scene.pushMatrix();
-        this.scene.translate(0, 0, -this.bodyLength-this.butt_length+0.1);
-        this.feathersMat.apply();
-        this.birdTail.display();
         this.scene.popMatrix();
     }
 
@@ -451,11 +516,22 @@ class MyBird extends CGFobject {
         this.scene.pushMatrix();
         for (let i = 0; i < this.branches.length; i++) {
             this.scene.pushMatrix();
-            this.scene.translate(0, this.branches_y_offset*this.scaleFactor, this.branches_z_offset*this.scaleFactor);
-            this.scene.rotate(Math.PI/2, 0, 1, 0);
+            this.scene.translate(0, this.grabbed_obj_y, this.grabbed_obj_z);
+            if (!this.simplify) this.scene.rotate(Math.PI/2, 0, 1, 0);
             this.branches[i].display();
             this.scene.popMatrix();
         }
+        this.scene.popMatrix();
+    }
+
+    display_egg() {
+        if(!this.egg) return;
+
+        this.scene.pushMatrix();
+        this.scene.translate(0, this.grabbed_obj_y, this.grabbed_obj_z);
+        this.scene.rotate( -Math.PI/2, 1, 0, 0);
+        this.scene.scale(this.egg.scale, this.egg.scale, this.egg.scale);
+        this.egg.display();
         this.scene.popMatrix();
     }
 
@@ -471,11 +547,11 @@ class MyBird extends CGFobject {
         this.draw_bird();
         this.scene.popMatrix();
         
-        this.scene.pushMatrix();
         this.display_branches();
-        this.scene.popMatrix();
+        this.display_egg();   
 
-        this.scene.popMatrix();       
+        this.scene.popMatrix();
+         
 
         /* Reset scene appearance */
         this.scene.setDefaultAppearance();
