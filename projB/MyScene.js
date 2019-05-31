@@ -263,9 +263,6 @@ class MyScene extends CGFscene {
             this.eggs[i].display();
             this.popMatrix();
         }
-        if (this.gui.isKeyPressed("KeyL")) {
-            this.lightning.startAnimation(t);
-        }
     }
 
     display() {
@@ -325,12 +322,11 @@ class MyScene extends CGFscene {
 //            this.nests[0].display();
             this.popMatrix();
 
-            this.displayBranches();            
+            //this.displayBranches();            
         }
             
-        this.displayEggs();
+        //this.displayEggs();
 
-        }
         this.popMatrix();
         
         /* END draw objects at ground height */        
