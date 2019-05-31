@@ -1,12 +1,13 @@
 class MyBird extends CGFobject {
 
-    constructor(scene, ID, simplify, x, y, z, ori) {
+    constructor(scene, ID, simplify, x, y, z, ori, alt) {
         super(scene);
         
         this.birdID = ID;
         this.simplify = simplify;
         this.initialPosition = [x || 0, y || 0, z || 0];
         this.initialOri = ori || 0;
+        this.alt_color = alt || false;
 
         this.initObjects();
         this.initShaders();
@@ -92,7 +93,7 @@ class MyBird extends CGFobject {
         this.feathersMat = new CGFappearance(this.scene);
         this.feathersMat.setAmbient(1, 1, 1, 1);
         this.feathersMat.setDiffuse(1, 1, 1, 1);
-        this.feathersMat.loadTexture('images/bird/purple_fur.jpg');
+        this.feathersMat.loadTexture(this.alt_color ? 'images/bird/red_fur.jpg' : 'images/bird/purple_fur.jpg');
         this.feathersMat.setTextureWrap('REPEAT', 'REPEAT');
 
         this.legMat = new CGFappearance(this.scene);

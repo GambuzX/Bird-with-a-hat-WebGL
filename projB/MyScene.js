@@ -30,9 +30,12 @@ class MyScene extends CGFscene {
 
         // Initialize scene objects
         this.axis = new CGFaxis(this);
-        this.bird = new MyBird(this, 0, false);
-        this.bird1 = new MyBird(this, this.p1_id, true, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], Math.PI/2);
-        this.bird2 = new MyBird(this, this.p2_id, true, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], -Math.PI/2);
+
+        this.birds = [
+            new MyBird(this, 0, false),
+            new MyBird(this, this.p1_id, true, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], Math.PI/2, false),
+            new MyBird(this, this.p2_id, true, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], -Math.PI/2, true)
+        ];
         this.terrain = new MyTerrain(this);        
         this.branches = [
             new MyTreeBranch(this, -8, 0, 6, 0, 3, 0.3), 
@@ -78,19 +81,18 @@ class MyScene extends CGFscene {
     }
     update(t){
         if (this.gameMode) {
-            this.bird1.update(t, this.speedFactor);
-            this.bird2.update(t, this.speedFactor);
+            this.birds[1].update(t, this.speedFactor);
+            this.birds[2].update(t, this.speedFactor);
         }
         else {
-            this.bird.update(t, this.speedFactor);
+            this.birds[0].update(t, this.speedFactor);
         }
         this.checkKeys();
     }
 
     updateBirdsScale() {
-        this.bird.setScaleFactor(this.scaleFactor);
-        this.bird1.setScaleFactor(this.scaleFactor);
-        this.bird2.setScaleFactor(this.scaleFactor);
+        for (let i = 0; i < this.birds.length; i++) 
+            this.birds[i].setScaleFactor(this.scaleFactor);
     }
 
     isGameMode() {
@@ -98,41 +100,30 @@ class MyScene extends CGFscene {
     }
 
     changeState() {
-        /* Reset birds */
-        this.bird.reset();
-        this.bird1.reset();
-        this.bird2.reset();
 
-        /* Retrieve grabbed branches */
-        let branches = this.bird.removeBranches();
-        for (let i = 0 ; i < branches.length; i++) this.addBranch(branches[i]);
+        for (let i = 0; i < this.birds.length; i++) {
+            /* Reset position */
+            this.birds[i].reset();
 
-        branches = this.bird1.removeBranches();
-        for (let i = 0 ; i < branches.length; i++) this.addBranch(branches[i]);
+            /* Retrieve branches */
+            let branches = this.birds[i].removeBranches();
+            for (let i = 0 ; i < branches.length; i++) 
+                this.addBranch(branches[i]);
 
-        branches = this.bird2.removeBranches();
-        for (let i = 0 ; i < branches.length; i++) this.addBranch(branches[i]);
+            /* Retrieve egg */
+            let egg = this.birds[i].removeEgg();
+            if (egg) 
+                this.addEgg(egg);
+        }
 
-        /* Reset branches */
+        /* Reset positions */
         for (let i = 0 ; i < this.branches.length; i++) this.branches[i].reset();
-
-        /* Retrieve grabbed eggs */
-        let egg = this.bird.removeEgg();
-        if (egg) this.addEgg(egg);
-
-        egg = this.bird1.removeEgg();
-        if (egg) this.addEgg(egg);
-
-        egg = this.bird2.removeEgg();
-        if (egg) this.addEgg(egg);
-        
-        /* Reset eggs */
         for (let i = 0 ; i < this.eggs.length; i++) this.eggs[i].reset();
     }
 
     checkKeys() {
 
-        let first_bird = this.gameMode ? this.bird1 : this.bird;
+        let first_bird = this.gameMode ? this.birds[1] : this.birds[0];
         // Check for keys codes e.g. in https://keycode.info/
         if (this.gui.isKeyPressed("KeyW")) {    
             first_bird.accelerate(this.speedFactor)
@@ -156,22 +147,22 @@ class MyScene extends CGFscene {
         if (!this.gameMode) return;
         
         if (this.gui.isKeyPressed("ArrowUp")) {
-            this.bird2.accelerate(this.speedFactor)
+            this.birds[2].accelerate(this.speedFactor)
         }
         if (this.gui.isKeyPressed("ArrowDown")) {
-            this.bird2.accelerate(-this.speedFactor);
+            this.birds[2].accelerate(-this.speedFactor);
         }
         if (this.gui.isKeyPressed("ArrowRight")) {
-            this.bird2.turn((Math.PI/6) / 3 * -this.speedFactor);
+            this.birds[2].turn((Math.PI/6) / 3 * -this.speedFactor);
         }
         if (this.gui.isKeyPressed("ArrowLeft")) {
-            this.bird2.turn((Math.PI/6) / 3 * this.speedFactor);
+            this.birds[2].turn((Math.PI/6) / 3 * this.speedFactor);
         }
         if (this.gui.isKeyPressed("ControlRight")) {
-            this.bird2.reset();
+            this.birds[2].reset();
         }
         if (this.gui.isKeyPressed("ShiftRight")) {
-            this.bird2.dropBird();
+            this.birds[2].dropBird();
         }
     }
 
@@ -249,8 +240,8 @@ class MyScene extends CGFscene {
 
         if (this.gameMode) {
             /* Birds */
-            this.bird1.display();
-            this.bird2.display();
+            this.birds[1].display();
+            this.birds[2].display();
 
             /* Nests */
             this.pushMatrix();
@@ -268,7 +259,7 @@ class MyScene extends CGFscene {
             this.displayEggs();
         }
         else {
-            this.bird.display();
+            this.birds[0].display();
 
             this.pushMatrix();
             this.translate(this.nests[0].position[0], this.nests[0].position[1], this.nests[0].position[2]);
