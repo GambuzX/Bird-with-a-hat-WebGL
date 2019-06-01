@@ -160,7 +160,7 @@ class MyBird extends CGFobject {
                     this.currentState = 1; /* Set dropping */
                     this.prevStartTime = t;
                 }
-                this.animShift = Math.sin((t/1000 * speedFactor) * 2 * Math.PI) * 0.5;
+                this.animShift = Math.sin(t/1000 * 2 * Math.PI) * 0.5;
                 break;
 
             /* Dropping and rising*/
@@ -540,7 +540,7 @@ class MyBird extends CGFobject {
     display() {
 
         this.scene.pushMatrix();
-        this.scene.translate(this.position[0], this.position[1] + /*this.animShift*this.scaleFactor*/  this.dropShift + this.birdHeight, this.position[2]);
+        this.scene.translate(this.position[0], this.position[1] + this.animShift*this.scaleFactor + this.dropShift + this.birdHeight, this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
         this.scene.scale(0.4, 0.4, 0.4); 
 

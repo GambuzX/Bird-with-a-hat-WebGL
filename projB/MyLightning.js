@@ -51,7 +51,8 @@ class MyLightning extends MyLSystem {
 
         let pushCounter = 0;
         // percorre a cadeia de caracteres
-        for (i=0; i<this.depth; ++i){
+        let limit = Math.min(this.depth, this.axiom.length);
+        for (i=0; i<limit; ++i){
 
             // verifica se sao caracteres especiais
             switch(this.axiom[i]){
@@ -105,8 +106,13 @@ class MyLightning extends MyLSystem {
                     break;
             }
         }
+
         for (let i = 0; i < pushCounter; i++) {
             this.scene.popMatrix();
+        }
+
+        if (limit == this.axiom.length) {
+            this.depth = 0;
         }
         this.scene.popMatrix();
         this.scene.setGlobalAmbientLight(0.1,0.1,0.1,1);

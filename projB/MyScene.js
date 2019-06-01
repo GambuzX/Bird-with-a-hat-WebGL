@@ -103,8 +103,6 @@ class MyScene extends CGFscene {
         this.daytimeMat.loadTexture('images/cubemap.jpg');
         this.daytimeMat.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
 
-        this.measureCube = new MyUnitCubeQuad(this);
-
         // Objects connected to MyInterface
         this.speedFactor = 1;
         this.scaleFactor = 1;
