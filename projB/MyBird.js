@@ -540,9 +540,9 @@ class MyBird extends CGFobject {
     display() {
 
         this.scene.pushMatrix();
-        this.scene.translate(this.position[0], this.position[1] + this.animShift*this.scaleFactor + this.dropShift + this.birdHeight, this.position[2]);
+        this.scene.translate(this.position[0], this.position[1] + /*this.animShift*this.scaleFactor*/  this.dropShift + this.birdHeight, this.position[2]);
         this.scene.rotate(this.orientation, 0, 1, 0);
-        this.scene.scale(0.5, 0.5, 0.5); 
+        this.scene.scale(0.4, 0.4, 0.4); 
 
         this.scene.pushMatrix();
         this.scene.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);

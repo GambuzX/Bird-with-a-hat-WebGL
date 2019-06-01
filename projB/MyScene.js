@@ -59,7 +59,7 @@ class MyScene extends CGFscene {
 
         this.eggs = [];
         let eggs_per_nest = 3;
-
+        
         this.lightning = new MyLightning(this);
         this.house = new MyHouse(this);
         this.plant = new MyLSPlant(this);
