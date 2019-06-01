@@ -2,12 +2,13 @@ class MyLightning extends MyLSystem {
     constructor(scene) {
         super(scene);
         this.axiom = "X";
+        this.ruleX = "F[-X][X]F[-X]+FX";
+        this.ruleX2 = "FX+[-X]F[X][-X]F";
         this.productions = {
             "F":["FF"],
             "X":[
-                "F[-X][X]F[-X]+FX", 
-                "F[-X][X]+X",
-                "F[+X]-X",
+                this.ruleX,
+                this.ruleX2
             ]
         };
         this.angle = 25;
@@ -48,7 +49,7 @@ class MyLightning extends MyLSystem {
 
         var i;
 
-        let pushed = false;
+        let pushCounter = 0;
         // percorre a cadeia de caracteres
         for (i=0; i<this.depth; ++i){
 
@@ -67,13 +68,13 @@ class MyLightning extends MyLSystem {
                 case "[":
                     // push
                     this.scene.pushMatrix();
-                    pushed = true;
+                    pushCounter++;
                     break;
 
                 case "]":
                     // pop
                     this.scene.popMatrix();
-                    pushed = false;
+                    pushCounter--;
                     break;
 
                 case "\\":
@@ -104,7 +105,7 @@ class MyLightning extends MyLSystem {
                     break;
             }
         }
-        if (pushed) {
+        for (let i = 0; i < pushCounter; i++) {
             this.scene.popMatrix();
         }
         this.scene.popMatrix();

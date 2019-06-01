@@ -32,6 +32,7 @@ serialInclude(['../lib/CGF.js',
                'MySphere.js',
                'MyEgg.js',
                'MyHalfSphere.js',
+               'MyCubeMap.js',
 main=function()
 {
     var app = new CGFapplication(document.body);
