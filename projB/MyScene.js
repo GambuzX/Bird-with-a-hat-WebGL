@@ -106,6 +106,7 @@ class MyScene extends CGFscene {
         // Objects connected to MyInterface
         this.speedFactor = 1;
         this.scaleFactor = 1;
+        this.showForest = true;
 
         this.updateGameScore();
     }
@@ -297,6 +298,55 @@ class MyScene extends CGFscene {
         }
     }
 
+    displayForest() {            
+        this.pushMatrix();
+        this.translate(5,0,4);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(-5,0,5);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(-8,0,-3);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(5,0,-11);
+        this.plant.display();
+        this.popMatrix();
+
+        let ang_inc = Math.PI/12;
+        for(let ang = -Math.PI/3; ang <= 4*Math.PI/3; ang += ang_inc) {
+            this.pushMatrix();
+            this.rotate(ang, 0, -1, 0);
+            this.translate(0, 0, 8);
+            this.plant.display();
+            this.popMatrix();
+        }
+
+        ang_inc = Math.PI/15;
+        for(let ang = -Math.PI/5; ang <= 6*Math.PI/5; ang += ang_inc) {
+            this.pushMatrix();
+            this.rotate(ang, 0, -1, 0);
+            this.translate(0, 0, 10);
+            this.plant.display();
+            this.popMatrix();
+        }
+
+        ang_inc = Math.PI/24;
+        for(let ang = 0; ang <= Math.PI; ang += ang_inc) {
+            this.pushMatrix();
+            this.rotate(ang, 0, -1, 0);
+            this.translate(0, 0, 12);
+            this.plant.display();
+            this.popMatrix();
+        }
+    }
+
     display() {
         // ---- BEGIN Background, camera and axis setup
         // Clear image and depth buffer everytime we update the scene
@@ -363,25 +413,8 @@ class MyScene extends CGFscene {
             this.house.display();
             this.popMatrix();
 
-            this.pushMatrix();
-            this.translate(5,0,4);
-            this.plant.display();
-            this.popMatrix();
-
-            this.pushMatrix();
-            this.translate(-5,0,5);
-            this.plant.display();
-            this.popMatrix();
-
-            this.pushMatrix();
-            this.translate(-8,0,-3);
-            this.plant.display();
-            this.popMatrix();
-
-            this.pushMatrix();
-            this.translate(5,0,-11);
-            this.plant.display();
-            this.popMatrix();
+            if (this.showForest)
+                this.displayForest();
 
             this.pushMatrix();
             this.translate(0,13,0);
