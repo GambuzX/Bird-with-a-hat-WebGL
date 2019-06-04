@@ -25,6 +25,7 @@ class MyLightning extends MyLSystem {
     }
 
     startAnimation(t) {
+        if (this.animating) return;
         this.axiom="X";
         this.iterate();
         this.animationInit = t;
