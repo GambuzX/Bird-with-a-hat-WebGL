@@ -11,7 +11,7 @@ class MyScene extends CGFscene {
         this.initCameras();
         this.initLights();
 
-        //Background color
+        // Background color
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
         this.gl.clearDepth(100.0);
@@ -21,11 +21,94 @@ class MyScene extends CGFscene {
         this.enableTextures(true);
         this.setUpdatePeriod(50);
 
-        //Initialize scene objects
-        this.axis = new CGFaxis(this);
-        this.plane = new Plane(this, 32);
+        // Minigame variables
+        this.p1_pos = [-10, 0, 0];
+        this.p2_pos = [5, 0, 0];
+        this.p1_id = 1;
+        this.p2_id = 2;
+        this.gameMode = false;
 
-        //Objects connected to MyInterface
+        // Minigame interface
+		this.minigameDiv = document.getElementById("minigame");
+		this.p1Div = document.getElementById("player1_score");
+		this.p2Div = document.getElementById("player2_score");
+
+        // Initialize scene objects
+        this.axis = new CGFaxis(this);
+        this.terrain = new MyTerrain(this);        
+
+        this.main_bird_id = 0;
+        this.main_nest_pos = [0, 0, 0];
+
+        this.birds = [
+            new MyBird(this, this.main_bird_id, false, this.main_nest_pos[0], this.main_nest_pos[1], this.main_nest_pos[2], false),
+            new MyBird(this, this.p1_id, true, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], Math.PI/2, false),
+            new MyBird(this, this.p2_id, true, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], -Math.PI/2, true)
+        ];
+        this.branches = [
+            new MyTreeBranch(this, -8, 0, 6, 0, 3, 0.3), 
+            new MyTreeBranch(this, 5, 0, 8, Math.PI/3, 3, 0.3), 
+            new MyTreeBranch(this, 1, 0, -10, 2*Math.PI/3, 3, 0.3), 
+            new MyTreeBranch(this, -15, 0, -7, Math.PI/2, 3, 0.3)
+        ];
+        this.nests = [
+            new MyNest(this, 60, this.main_nest_pos[0], this.main_nest_pos[1], this.main_nest_pos[2], this.main_bird_id),
+            new MyNest(this, 30, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id),
+            new MyNest(this, 30, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id)
+        ];
+
+        this.eggs = [];
+        let eggs_per_nest = 3;
+        
+        this.lightning = new MyLightning(this);
+        this.house = new MyHouse(this);
+        this.plant = new MyLSPlant(this);
+        this.doGenerate = function() {
+            this.plant.generate(
+                "X",
+                {
+                    "F": [ "FF" ],
+                    "X": [ 
+                        "F[-X][X]F[-X]+X",
+                        "F[-X][X]+X",
+                        "F[+X]-X",
+                        "F[/X][X]F[\\\\X]+X",
+                        "F[\\X][X]/X",
+                        "F[/X]\\X",
+                        "F[^X][X]F[&X]^X",
+                        "F[^X]&X",
+                        "F[&X]^X",
+                    ]
+                },
+                30,
+                5,
+                0.6
+            );
+        };
+        this.doGenerate();
+
+        for (let i = 0; i < eggs_per_nest; i++) {
+            this.eggs.push(new MyEgg(this, this.main_nest_pos[0], this.main_nest_pos[1], this.main_nest_pos[2], this.main_bird_id));
+            this.eggs.push(new MyEgg(this, this.p1_pos[0], this.p1_pos[1], this.p1_pos[2], this.p1_id));
+            this.eggs.push(new MyEgg(this, this.p2_pos[0], this.p2_pos[1], this.p2_pos[2], this.p2_id));
+        }
+        this.total_game_eggs = this.eggs.length - eggs_per_nest;
+
+        this.skybox = new MyCubeMap(this);
+        this.daytimeMat = new CGFappearance(this);
+        this.daytimeMat.setAmbient(1, 1, 1, 1);
+        this.daytimeMat.setDiffuse(0, 0, 0, 1);
+        this.daytimeMat.setSpecular(0, 0, 0, 1);
+        this.daytimeMat.setShininess(1);
+        this.daytimeMat.loadTexture('images/cubemap.jpg');
+        this.daytimeMat.setTextureWrap('CLAMP_TO_EDGE', 'CLAMP_TO_EDGE');
+
+        // Objects connected to MyInterface
+        this.speedFactor = 1;
+        this.scaleFactor = 1;
+        this.showForest = true;
+
+        this.updateGameScore();
     }
     initLights() {
         this.lights[0].setPosition(15, 2, 5, 1);
@@ -43,7 +126,225 @@ class MyScene extends CGFscene {
         this.setShininess(10.0);
     }
     update(t){
+        if (this.gameMode) {
+            this.birds[1].update(t, this.speedFactor);
+            this.birds[2].update(t, this.speedFactor);
+        }
+        else {
+            this.birds[0].update(t, this.speedFactor);
+        }
 
+        if (this.lightning.animating) {
+            this.lightning.update(t);
+        }
+
+        this.checkKeys(t);
+    }
+
+    updateBirdsScale() {
+        for (let i = 0; i < this.birds.length; i++) 
+            this.birds[i].setScaleFactor(this.scaleFactor);
+    }
+
+    isGameMode() {
+        return this.gameMode;
+    }
+
+    updateGameScore() {
+        let scores = [0, 0, 0];
+        for (let i = 0; i < this.eggs.length; i++) {
+            scores[this.eggs[i].getBirdID()] += 1;
+        }
+
+        this.p1Div.innerHTML = scores[1];
+        this.p2Div.innerHTML = scores[2];
+
+        if (scores[1] == this.total_game_eggs){
+            this.endGame("Player 1 won!!!");
+        }
+        else if (scores[2] == this.total_game_eggs) {
+            this.endGame("Player 2 won!!!");
+        }
+    }
+
+    endGame(message) {
+        alert(message);
+        this.changeState();
+    }
+
+    changeState() {
+
+        if(this.gameMode)
+            this.minigameDiv.style.display = "block";
+        else
+            this.minigameDiv.style.display = "none";
+
+        for (let i = 0; i < this.birds.length; i++) {
+            /* Reset position */
+            this.birds[i].reset();
+
+            /* Retrieve branches */
+            let branches = this.birds[i].removeBranches();
+            for (let j = 0 ; j < branches.length; j++) 
+                this.addBranch(branches[j]);
+
+            /* Retrieve egg */
+            let egg = this.birds[i].removeEgg();
+            if (egg) this.addEgg(egg);
+        }
+
+        /* Reset positions */
+        for (let i = 0 ; i < this.branches.length; i++) this.branches[i].reset();
+        for (let i = 0 ; i < this.eggs.length; i++) this.eggs[i].reset();
+        
+        this.updateGameScore();
+    }
+
+    checkKeys(t) {
+
+        let first_bird = this.gameMode ? this.birds[1] : this.birds[0];
+        
+        // Check for keys codes e.g. in https://keycode.info/
+        if (this.gui.isKeyPressed("KeyW")) {    
+            first_bird.accelerate(this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("KeyS")) {
+            first_bird.accelerate(-this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("KeyD")) {
+            first_bird.turn((Math.PI/6) / 3 * -this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("KeyA")) {
+            first_bird.turn((Math.PI/6) / 3 * this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("KeyR")) {
+            if (this.gameMode)
+                this.changeState();
+            else
+                first_bird.reset();
+        }
+        if (this.gui.isKeyPressed("KeyP")) {
+            first_bird.dropBird();
+        }
+
+        if (this.gui.isKeyPressed("KeyL")) {
+            if (!this.gameMode) {
+                this.lightning.startAnimation(t);
+            }
+        }
+
+        if (!this.gameMode) return;
+        
+        if (this.gui.isKeyPressed("ArrowUp")) {
+            this.birds[2].accelerate(this.speedFactor)
+        }
+        if (this.gui.isKeyPressed("ArrowDown")) {
+            this.birds[2].accelerate(-this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("ArrowRight")) {
+            this.birds[2].turn((Math.PI/6) / 3 * -this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("ArrowLeft")) {
+            this.birds[2].turn((Math.PI/6) / 3 * this.speedFactor);
+        }
+        if (this.gui.isKeyPressed("ShiftRight")) {
+            this.birds[2].dropBird();
+        }
+    }
+
+    euclidianDistance(pos1, pos2) {
+        return Math.sqrt(Math.pow(pos1[0]-pos2[0], 2) + Math.pow(pos1[1]-pos2[1], 2) + Math.pow(pos1[2]-pos2[2], 2));
+    }
+
+    addBranch(branch) {
+        this.branches.push(branch);
+    }
+
+    removeBranch(i) {
+        this.branches.splice(i,1);
+    }
+
+    addEgg(egg) {
+        this.eggs.push(egg);
+    }
+
+    removeEgg(i) {
+        this.eggs.splice(i,1);
+    }
+
+    displayBranches() {
+        for (let i = 0 ; i < this.branches.length; i++) {        
+            this.pushMatrix();
+            this.translate( this.branches[i].position[0],  this.branches[i].position[1],  this.branches[i].position[2]);
+            this.rotate( this.branches[i].rotation, 0, 1, 0);  
+            this.scale(0.5, 0.5, 0.5);      
+            this.branches[i].display();
+            this.popMatrix();
+        }
+    }
+
+    displayEggs() {
+        for (let i = 0 ; i < this.eggs.length; i++) {
+            if (this.gameMode && this.eggs[i].birdID == this.main_bird_id) continue;
+            if (!this.gameMode && this.eggs[i].birdID != this.main_bird_id) continue;
+                   
+            this.pushMatrix();
+            this.translate( this.eggs[i].position[0] + this.eggs[i].offset[0],  this.eggs[i].position[1] + this.eggs[i].offset[1],  this.eggs[i].position[2] + this.eggs[i].offset[2]);
+            this.rotate( this.eggs[i].rotation, this.eggs[i].rot_axis[0], this.eggs[i].rot_axis[1], this.eggs[i].rot_axis[2]);
+            this.scale(this.eggs[i].scale, this.eggs[i].scale, this.eggs[i].scale);
+            this.scale(0.5, 0.5, 0.5);
+            this.eggs[i].display();
+            this.popMatrix();
+        }
+    }
+
+    displayForest() {            
+        this.pushMatrix();
+        this.translate(5,0,4);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(-5,0,5);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(-8,0,-3);
+        this.plant.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.translate(5,0,-11);
+        this.plant.display();
+        this.popMatrix();
+
+        let ang_inc = Math.PI/12;
+        for(let ang = -Math.PI/3; ang <= 4*Math.PI/3; ang += ang_inc) {
+            this.pushMatrix();
+            this.rotate(ang, 0, -1, 0);
+            this.translate(0, 0, 8);
+            this.plant.display();
+            this.popMatrix();
+        }
+
+        ang_inc = Math.PI/15;
+        for(let ang = -Math.PI/5; ang <= 6*Math.PI/5; ang += ang_inc) {
+            this.pushMatrix();
+            this.rotate(ang, 0, -1, 0);
+            this.translate(0, 0, 10);
+            this.plant.display();
+            this.popMatrix();
+        }
+
+        ang_inc = Math.PI/24;
+        for(let ang = 0; ang <= Math.PI; ang += ang_inc) {
+            this.pushMatrix();
+            this.rotate(ang, 0, -1, 0);
+            this.translate(0, 0, 12);
+            this.plant.display();
+            this.popMatrix();
+        }
     }
 
     display() {
@@ -67,8 +368,75 @@ class MyScene extends CGFscene {
         this.pushMatrix();
         this.rotate(-0.5*Math.PI, 1, 0, 0);
         this.scale(60, 60, 1);
-        this.plane.display();
+        this.terrain.display();
         this.popMatrix();
+        
+
+        /* BEGIN draw objects at ground height */
+        let ground_height = 2.5;
+        this.pushMatrix();
+        this.translate(0, ground_height, 0);
+
+        if (this.gameMode) {
+            /* Birds */
+            this.birds[1].display();
+            this.birds[2].display();
+
+            /* Nests */
+            this.pushMatrix();
+            this.translate(this.nests[1].position[0], this.nests[1].position[1], this.nests[1].position[2]);
+            this.scale(0.5, 0.5, 0.5);
+            this.nests[1].display();
+            this.popMatrix();
+
+            this.pushMatrix();
+            this.translate(this.nests[2].position[0], this.nests[2].position[1], this.nests[2].position[2]);
+            this.scale(0.5, 0.5, 0.5);
+            this.nests[2].display();
+            this.popMatrix();
+        }
+        else {
+            this.birds[0].display();
+
+            this.pushMatrix();
+            this.translate(this.nests[0].position[0], this.nests[0].position[1], this.nests[0].position[2]);
+            this.scale(0.5, 0.5, 0.5);
+            this.nests[0].display();
+            this.popMatrix();
+
+            this.displayBranches();
+            
+            this.pushMatrix();
+            this.translate(3.2,0,-4.2);
+            this.rotate(-Math.PI/4, 0, 1, 0);
+            this.scale(2,2,2);
+            this.house.display();
+            this.popMatrix();
+
+            if (this.showForest)
+                this.displayForest();
+
+            this.pushMatrix();
+            this.translate(0,13,0);
+            this.rotate(Math.PI, 0,0,1);
+            this.lightning.display();
+            this.popMatrix();
+        }
+            
+        this.displayEggs();
+
+        this.pushMatrix();
+        this.daytimeMat.apply();
+        this.setGlobalAmbientLight(1,1,1,1);
+        this.scale(100,100,100);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+        this.skybox.display();
+        this.setGlobalAmbientLight(0.1,0.1,0.1,1);
+        this.setDefaultAppearance();
+        this.popMatrix();
+        
+        /* END draw objects at ground height */        
+
         // ---- END Primitive drawing section
     }
 }

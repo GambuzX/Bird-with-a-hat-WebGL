@@ -13,19 +13,19 @@ class MyHouse extends CGFobject {
 
     initHouseMaterials() {
         this.wallMat = new CGFappearance(this.scene);
-        this.wallMat.setAmbient(this.scene.ambientLight, this.scene.ambientLight, this.scene.ambientLight, 1);
+        this.wallMat.setAmbient(1, 1, 1, 1);
         this.wallMat.setDiffuse(1, 1, 1, 1);
         this.wallMat.setSpecular(0.1, 0.1, 0.1, 1);
         this.wallMat.setShininess(1);
-        this.wallMat.loadTexture('textures/house/brick_wall.jpg');
+        this.wallMat.loadTexture('images/house/brick_wall.jpg');
         this.wallMat.setTextureWrap('REPEAT', 'REPEAT');
 
         this.roofMaterial = new CGFappearance(this.scene);
-        this.roofMaterial.setAmbient(this.scene.ambientLight, this.scene.ambientLight, this.scene.ambientLight, 1);
+        this.roofMaterial.setAmbient(1, 1, 1, 1);
         this.roofMaterial.setDiffuse(1, 1, 1, 1);
         this.roofMaterial.setSpecular(0.5, 0.5, 0.5, 1);
         this.roofMaterial.setShininess(5);
-        this.roofMaterial.loadTexture('textures/house/rooftiles.png');
+        this.roofMaterial.loadTexture('images/house/rooftiles.png');
         this.roofMaterial.setTextureWrap('REPEAT', 'REPEAT');
     }
 
