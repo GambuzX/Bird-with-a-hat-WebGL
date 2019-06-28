@@ -24,11 +24,11 @@ As an extra, it was developed a 2-player **minigame** that features 2 birds (1 f
 **Project specifications can be seen in 'project_b.pdf'**
 
 ### Screenshots
-![Scene](https://github.com/GambuzX/Project_B_CGRA/blob/master/screenshots/scene.PNG) *Scene*
-![Bird](https://github.com/GambuzX/Project_B_CGRA/blob/master/screenshots/bird.PNG) *Bird*
-![Branches](https://github.com/GambuzX/Project_B_CGRA/blob/master/screenshots/branches.PNG) *Picking up branches*
-![Minigame](https://github.com/GambuzX/Project_B_CGRA/blob/master/screenshots/minigame.PNG) *Minigame*
-![Minigame gameplay](https://github.com/GambuzX/Project_B_CGRA/blob/master/screenshots/minigame2.PNG) *Minigame gameplay*
+![Scene](https://github.com/GambuzX/Bird-with-a-hat-WebGL/blob/master/screenshots/scene.PNG) *Scene*
+![Bird](https://github.com/GambuzX/Bird-with-a-hat-WebGL/blob/master/screenshots/bird.PNG) *Bird*
+![Branches](https://github.com/GambuzX/Bird-with-a-hat-WebGL/blob/master/screenshots/branches.PNG) *Picking up branches*
+![Minigame](https://github.com/GambuzX/Bird-with-a-hat-WebGL/blob/master/screenshots/minigame.PNG) *Minigame*
+![Minigame gameplay](https://github.com/GambuzX/Bird-with-a-hat-WebGL/blob/master/screenshots/minigame2.PNG) *Minigame gameplay*
 
 
 ### Technologies and Software Used
