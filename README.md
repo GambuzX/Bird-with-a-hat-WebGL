@@ -36,6 +36,11 @@ As an extra, it was developed a 2-player **minigame** that features 2 birds (1 f
 * WebGL
 * WebCGF
 
+### Install Instructions
+Download this repository, start a server on its root, access it and navigate to 'projB'. 
+
+If you have python you can easily start a server in port 8080 with 'python -m http.server 8080'. After that open your browser and go to 'localhost:8080'.
+
 ### Curricular Unit Info
 * **Date:** 2nd Year, 2nd Semester, 2018/2019
 * **Course:** [Computação Gráfica | Computer Graphics ](https://sigarra.up.pt/feup/en/UCURR_GERAL.FICHA_UC_VIEW?pv_ocorrencia_id=419996 "CGRA") (CGRA)
