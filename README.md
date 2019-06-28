@@ -1,4 +1,4 @@
-# Project B CGRA :bird: :tophat:
+# Bird with a hat WebGL :bird: :tophat:
 WebGL scene of a mountain featuring an animated bird which can be controlled by the user and pick up branches.
 
 **The bird has a hat.**
