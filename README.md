@@ -1,5 +1,7 @@
-# Project B CGRA :bird: :sunrise_over_mountains:
+# Project B CGRA :bird: :tophat:
 WebGL scene of a mountain featuring an animated bird which can be controlled by the user and pick up branches.
+
+**The bird has a hat.**
 
 
 #### Grade: 19.6
