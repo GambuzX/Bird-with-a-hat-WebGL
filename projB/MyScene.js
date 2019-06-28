@@ -106,7 +106,7 @@ class MyScene extends CGFscene {
         // Objects connected to MyInterface
         this.speedFactor = 1;
         this.scaleFactor = 1;
-        this.showForest = true;
+        this.showForest = false;
 
         this.updateGameScore();
     }
